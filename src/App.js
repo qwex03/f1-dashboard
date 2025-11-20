@@ -1,15 +1,17 @@
-import { useState, useEffect } from 'react';
-import ThemeToggle from './composant/ThemeToggle';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Navbar from "./composant/NavBar";
 
 
 function App() {
- 
-
   return (
-    <div className="bg-white dark:bg-gray-900 text-black dark:text-white min-h-screen">
-      <h1 className="text-2xl p-4">Hello Tailwind Dark Mode!</h1>
-      <ThemeToggle />
-    </div>
+    <BrowserRouter>
+      <div className="flex min-h-screen">
+        <Navbar />
+
+        <main className="flex-grow p-4 dark:bg-gray-800 bg-white transition-colors duration-300">
+        </main>
+      </div>
+    </BrowserRouter>
   );
 }
 
