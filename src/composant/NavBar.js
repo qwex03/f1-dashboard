@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
-import { Link } from "react-router-dom";
 import { 
   MenuIcon, 
   HomeIcon, 
@@ -11,6 +11,9 @@ import {
 
 export default function Navbar() {
   const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation(); 
+
+  const isActive = (path) => location.pathname === path;
 
   return (
     <nav
@@ -23,7 +26,7 @@ export default function Navbar() {
       <div className="flex justify-between items-center mb-4">
         {!collapsed && (
           <div className="text-2xl font-bold text-gray-900 dark:text-white">
-            F1 Dashboard
+            ApexF1
           </div>
         )}
 
@@ -37,19 +40,21 @@ export default function Navbar() {
 
       <hr className="border-gray-300 dark:border-gray-700 mb-1" />
 
-       <h2
+      <h2
         className={`text-xs font-semibold uppercase tracking-wider 
                     text-gray-500 dark:text-gray-400 transition-opacity duration-200
                     ${collapsed ? "opacity-0" : "opacity-100"}`}
-        >
+      >
         Liens
-        </h2>
+      </h2>
 
       <div className="flex flex-col gap-3">
-
         <Link
           to="/"
-          className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-red-600 hover:text-white transition-colors duration-300 flex items-center gap-3"
+          className={`
+            px-4 py-2 rounded flex items-center gap-3 transition-colors duration-300
+            ${isActive("/") ? "bg-red-600 text-white" : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-red-600 hover:text-white"}
+          `}
         >
           <HomeIcon size={20} />
           {!collapsed && "Home"}
@@ -57,7 +62,10 @@ export default function Navbar() {
 
         <Link
           to="/drivers"
-          className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-red-600 hover:text-white transition-colors duration-300 flex items-center gap-3"
+          className={`
+            px-4 py-2 rounded flex items-center gap-3 transition-colors duration-300
+            ${isActive("/drivers") ? "bg-red-600 text-white" : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-red-600 hover:text-white"}
+          `}
         >
           <UserIcon size={20} />
           {!collapsed && "Pilotes"}
@@ -65,7 +73,10 @@ export default function Navbar() {
 
         <Link
           to="/teams"
-          className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-red-600 hover:text-white transition-colors duration-300 flex items-center gap-3"
+          className={`
+            px-4 py-2 rounded flex items-center gap-3 transition-colors duration-300
+            ${isActive("/teams") ? "bg-red-600 text-white" : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-red-600 hover:text-white"}
+          `}
         >
           <UsersIcon size={20} />
           {!collapsed && "Équipes"}
@@ -73,7 +84,10 @@ export default function Navbar() {
 
         <Link
           to="/circuits"
-          className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-red-600 hover:text-white transition-colors duration-300 flex items-center gap-3"
+          className={`
+            px-4 py-2 rounded flex items-center gap-3 transition-colors duration-300
+            ${isActive("/circuits") ? "bg-red-600 text-white" : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-red-600 hover:text-white"}
+          `}
         >
           <MapPinIcon size={20} />
           {!collapsed && "Circuits"}
@@ -86,15 +100,11 @@ export default function Navbar() {
         className={`text-xs font-semibold uppercase tracking-wider 
                     text-gray-500 dark:text-gray-400 transition-opacity duration-200
                     ${collapsed ? "opacity-0" : "opacity-100"}`}
-        >
+      >
         Paramètres
-        </h2>
+      </h2>
 
       <ThemeToggle collapsed={collapsed} />
-
     </nav>
-
-
-    
   );
 }
