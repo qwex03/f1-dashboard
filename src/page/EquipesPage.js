@@ -1,5 +1,6 @@
 import { useState } from "react";
 import useFetch from "../hooks/useFetch";
+import { getFlagImg } from "../utils/flags";
 
 function EquipesPage() {
   const [view, setView] = useState("constructeurs"); 
@@ -102,7 +103,16 @@ function EquipesPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
-                      {team.nationality}
+                      <div className="flex flex-row gap-2 items-center">
+                        {getFlagImg(team.nationality) && (
+                          <img
+                          src={getFlagImg(team.nationality)}
+                          alt={team.nationality}
+                          className="w-6 h-4 object-contain"
+                          />
+                        )}
+                        {team.nationality}
+                      </div>
                     </td>
                   </tr>
                 ))

@@ -83,10 +83,10 @@ export default function Navbar() {
         </Link>
 
         <Link
-          to="/circuits"
+          to="/tracks"
           className={`
             px-4 py-2 rounded flex items-center gap-3 transition-colors duration-300
-            ${isActive("/circuits") ? "bg-red-600 text-white" : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-red-600 hover:text-white"}
+            ${isActive("/tracks") ? "bg-red-600 text-white" : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-red-600 hover:text-white"}
           `}
         >
           <MapPinIcon size={20} />

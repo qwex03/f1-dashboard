@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./composant/NavBar";
 import EquipesPage from "./page/EquipesPage";
 import PilotesPage from "./page/PilotesPage";
+import CircuitPage from "./page/CircuitPage";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Routes>
             <Route path="/drivers" element={<PilotesPage />} />
             <Route path="/teams" element={<EquipesPage />} />
+            <Route path="/tracks" element={<CircuitPage />} />
           </Routes>
         </main>
       </div>
