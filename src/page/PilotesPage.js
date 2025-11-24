@@ -37,7 +37,7 @@ export default function PilotesEtClassement() {
           onClick={() => setView("pilotes")}
           className={`px-6 py-2 rounded-lg font-semibold transition-all ${
             view === "pilotes"
-              ? "bg-white dark:bg-gray-700 shadow text-red-600"
+              ? "bg-red-600 dark:bg-gray-700 shadow text-white"
               : "text-gray-600 dark:text-gray-400"
           }`}
         >
@@ -48,7 +48,7 @@ export default function PilotesEtClassement() {
           onClick={() => setView("classement")}
           className={`px-6 py-2 rounded-lg font-semibold transition-all ${
             view === "classement"
-              ? "bg-white dark:bg-gray-700 shadow text-red-600"
+              ? "bg-red-600 dark:bg-gray-700 shadow text-white"
               : "text-gray-600 dark:text-gray-400"
           }`}
         >
