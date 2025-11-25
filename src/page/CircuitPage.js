@@ -1,5 +1,5 @@
 import useFetch from "../hooks/useFetch";
-import { getFlagImg } from "../utils/flags"; // au cas où tu veux mettre drapeau pays
+import { getFlagImg } from "../utils/flags";
 
 export default function CircuitPage() {
   const { data, loading, error } = useFetch(
@@ -11,9 +11,12 @@ export default function CircuitPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-          Circuits
+        <div className="flex items-center gap-3 px-2">
+        <div className="w-1 h-10 bg-red-600 rounded-full"></div>
+        <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+           Circuit
         </h1>
+        </div>
         <p className="text-gray-600 dark:text-gray-400">
           Infos sur les circuits de la saison
         </p>

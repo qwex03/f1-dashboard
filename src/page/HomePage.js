@@ -21,63 +21,97 @@ export default function HomeTop3() {
   };
 
   const colors = {
-    1: "from-yellow-300 to-yellow-500",
-    2: "from-gray-300 to-gray-400",
-    3: "from-orange-400 to-orange-600",
+    1: "from-yellow-400 via-yellow-300 to-yellow-500",
+    2: "from-slate-300 via-gray-200 to-slate-400",
+    3: "from-amber-500 via-orange-400 to-orange-600",
+  };
+
+  const badges = {
+    1: "🥇",
+    2: "🥈", 
+    3: "🥉"
   };
 
   return (
-    <div className="space-y-8">
-
-      <div className="mb-20">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-          Bienvenue sur ApexF1
+    <div className="space-y-12 pb-16">
+      <div className="mb-16">
+        <div className="flex items-center gap-3 mb-12 px-2">
+        <div className="w-1 h-10 bg-red-600 rounded-full"></div>
+        <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+            Bienvenue sur ApexF1
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">
+        </div>
+        <p className="text-lg text-gray-600 dark:text-gray-400">
           Le tableau de bord ultime pour les passionnés de Formule 1 !
         </p>
       </div>
 
-      <div className="mx-auto px-4 flex justify-between items-center mb-10">
-        <h3 className="text-3xl font-bold dark:text-white">Top 3</h3>
-
-        <Link
-          to="/drivers"
-          className="text-red-500 font-semibold hover:opacity-75 text-lg"
-        >
-          Voir le classement →
-        </Link>
-      </div>
-
-      <div className="max-w-5xl mx-auto px-4 flex justify-center items-end gap-10">
-        {top3.map((d) => {
-          const driver = d.Driver;
-          return (
-            <div
-              key={driver.driverId}
-              className={`relative bg-gradient-to-b ${colors[d.position]} ${sizes[d.position]} rounded-2xl shadow-xl flex flex-col items-center justify-end p-4`}
-            >
-              <div className="absolute -top-14 w-36 h-36 bg-white rounded-full shadow-xl"></div>
-
-              <img
-                src={"/driver-img/" + driver.familyName + ".avif"}
-                alt={driver.familyName}
-                className="absolute -top-12 w-32 h-32 object-cover rounded-full border-4 border-white"
-              />
-
-              <p className="absolute top-2 right-3 text-xl font-bold text-white drop-shadow-lg">
-                #{d.position}
-              </p>
-
-              <div className="mt-20 text-center text-white">
-                <p className="text-xl font-semibold">
-                  {driver.givenName} {driver.familyName}
-                </p>
-                <p className="opacity-90 text-sm">{d.points} pts</p>
-              </div>
+      <div className=" mx-auto">
+        <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-gray-800 dark:to-gray-900 rounded-3xl shadow-2xl p-8 border border-red-200 dark:border-red-900">
+          <div className="flex justify-between items-center mb-12 px-2">
+            <div className="flex items-center gap-3">
+              <div className="w-1 h-8 bg-red-600 rounded-full"></div>
+              <h3 className="text-3xl font-bold text-gray-900 dark:text-white">
+                Podium 2025
+              </h3>
             </div>
-          );
-        })}
+
+            <Link
+              to="/drivers"
+              className="group flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl"
+            >
+              Classement complet
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </Link>
+          </div>
+
+          <div className="flex justify-center items-end gap-8 px-4">
+            {top3.map((d) => {
+              const driver = d.Driver;
+              const isFirst = d.position === "1";
+              
+              return (
+                <div
+                  key={driver.driverId}
+                  className={`relative ${sizes[d.position]} ${isFirst ? 'scale-105' : ''} transition-transform hover:scale-110 duration-300`}
+                >
+                  <div className={`h-full bg-gradient-to-br ${colors[d.position]} rounded-3xl shadow-2xl flex flex-col items-center justify-end p-6 border-4 ${isFirst ? 'border-yellow-300' : 'border-white/50'}`}>
+                    
+                    <div className="absolute -top-16 w-40 h-40 bg-white dark:bg-gray-100 rounded-full shadow-2xl border-4 border-white"></div>
+
+                    <img
+                      src={"/driver-img/" + driver.familyName + ".avif"}
+                      alt={driver.familyName}
+                      className="absolute -top-14 w-36 h-36 object-cover rounded-full border-4 border-white shadow-xl"
+                    />
+
+                    <div className="absolute -top-6 right-4 text-5xl">
+                      {badges[d.position]}
+                    </div>
+
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-md">
+                      <p className="text-sm font-bold text-gray-800">
+                        P{d.position}
+                      </p>
+                    </div>
+
+                    <div className="mt-24 text-center text-white space-y-2 w-full">
+                      <p className="text-2xl font-bold drop-shadow-lg">
+                        {driver.familyName}
+                      </p>
+                      <p className="text-lg opacity-95 font-medium">
+                        {driver.givenName}
+                      </p>
+                      <div className="mt-4 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 inline-block">
+                        <p className="text-lg font-bold">{d.points} pts</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );
