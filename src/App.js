@@ -3,6 +3,7 @@ import Navbar from "./composant/NavBar";
 import EquipesPage from "./page/EquipesPage";
 import PilotesPage from "./page/PilotesPage";
 import CircuitPage from "./page/CircuitPage";
+import HomePage from "./page/HomePage";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
 
         <main className="flex-grow p-6 dark:bg-gray-800 bg-white transition-colors duration-300">
           <Routes>
+            <Route path="/" element={<HomePage />} />
             <Route path="/drivers" element={<PilotesPage />} />
             <Route path="/teams" element={<EquipesPage />} />
             <Route path="/tracks" element={<CircuitPage />} />
