@@ -80,6 +80,9 @@ function EquipesPage() {
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">
                   Points
                 </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  Victoires
+                </th>
               </tr>
             )}
           </thead>
@@ -137,6 +140,9 @@ function EquipesPage() {
                     </td>
                     <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
                       {team.points}
+                    </td>
+                    <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
+                      {team.wins}
                     </td>
                   </tr>
                 ))}
