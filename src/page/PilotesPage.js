@@ -121,6 +121,9 @@ export default function PilotesEtClassement() {
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">
                     Points
                   </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">
+                    Victoires
+                  </th>
                 </tr>
               </thead>
 
@@ -179,6 +182,9 @@ export default function PilotesEtClassement() {
 
                     <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-semibold">
                       {s.points}
+                    </td>
+                    <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-semibold">
+                      {s.wins}
                     </td>
                   </tr>
                 ))}
