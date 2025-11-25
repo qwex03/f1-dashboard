@@ -6,7 +6,8 @@ import {
   HomeIcon, 
   UserIcon, 
   UsersIcon, 
-  MapPinIcon 
+  MapPinIcon,
+  NewspaperIcon 
 } from "lucide-react";
 
 export default function Navbar() {
@@ -91,6 +92,17 @@ export default function Navbar() {
         >
           <MapPinIcon size={20} />
           {!collapsed && "Circuits"}
+        </Link>
+
+        <Link
+          to="/news"
+          className={`
+            px-4 py-2 rounded flex items-center gap-3 transition-colors duration-300
+            ${isActive("/news") ? "bg-red-600 text-white" : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-red-600 hover:text-white"}
+          `}
+        >
+          <NewspaperIcon size={20} />
+          {!collapsed && "Actualités"}
         </Link>
       </div>
 
