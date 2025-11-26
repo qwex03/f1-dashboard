@@ -4,6 +4,7 @@ import EquipesPage from "./page/EquipesPage";
 import PilotesPage from "./page/PilotesPage";
 import CircuitPage from "./page/CircuitPage";
 import HomePage from "./page/HomePage";
+import ResultPage from "./page/ResultPage";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route path="/drivers" element={<PilotesPage />} />
             <Route path="/teams" element={<EquipesPage />} />
             <Route path="/tracks" element={<CircuitPage />} />
+            <Route path="/results" element={<ResultPage />} />
           </Routes>
         </main>
       </div>
