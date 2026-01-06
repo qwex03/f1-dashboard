@@ -11,20 +11,20 @@ import {
   AwardIcon 
 } from "lucide-react";
 
-export default function Navbar() {
-  const [collapsed, setCollapsed] = useState(false);
+  export default function Navbar({ collapsed, setCollapsed }) {
   const location = useLocation(); 
 
   const isActive = (path) => location.pathname === path;
 
   return (
     <nav
-      className={`
-        bg-gray-100 dark:bg-gray-900 shadow p-4 flex flex-col gap-6 min-h-screen 
-        transition-all duration-300 
-        ${collapsed ? "w-20" : "w-64"}
-      `}
-    >
+    className={`
+    fixed top-0 left-0
+    bg-gray-100 dark:bg-gray-900 shadow p-4 flex flex-col gap-6
+    h-screen
+    transition-all duration-300
+    ${collapsed ? "w-20" : "w-64"}
+    `}>
       <div className="flex justify-between items-center mb-4">
         {!collapsed && (
           <div className="text-2xl font-bold text-gray-900 dark:text-white">
