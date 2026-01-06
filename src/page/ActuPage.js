@@ -28,7 +28,7 @@ export default function ActuPage() {
         {articles.map((article) => (
         <li
         key={article.guid}
-        className="group overflow-hidden rounded-2xl bg-white shadow-md transition hover:shadow-xl"
+        className="group overflow-hidden rounded-2xl dark:bg-gray-900 bg-white shadow-md transition hover:shadow-xl"
         >
         {article.enclosure?.link && (
             <div className="h-48 overflow-hidden">
@@ -46,13 +46,13 @@ export default function ActuPage() {
             href={article.link}
             target="_blank"
             rel="noreferrer"
-            className="text-lg font-semibold leading-snug text-gray-900 hover:text-red-600"
+            className="text-lg font-semibold leading-snug text-gray-900 hover:text-red-600 dark:text-white dark:hover:text-red-400 transition-colors duration-300"
             >
             {article.title}
             </a>
 
             <p
-            className="text-sm text-gray-600 line-clamp-3"
+            className="text-sm text-gray-600 line-clamp-3 dark:text-gray-400"
             dangerouslySetInnerHTML={{ __html: article.description }}
             />
 
