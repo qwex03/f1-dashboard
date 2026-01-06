@@ -84,7 +84,7 @@ export default function ResultPage() {
                     results.map((r, index) => (
                       <tr
                         key={index}
-                        className="hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors animate-fadeIn"
+                        className="hover:bg-gray-50 hover:text-red-600 dark:hover:bg-gray-750 transition-colors animate-fadeIn"
                         style={{ animationDelay: `${index * 0.03}s` }}
                       >
                         <td className="px-4 py-3 font-medium dark:text-white">{r.position}</td>

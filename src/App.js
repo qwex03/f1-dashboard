@@ -5,6 +5,7 @@ import PilotesPage from "./page/PilotesPage";
 import CircuitPage from "./page/CircuitPage";
 import HomePage from "./page/HomePage";
 import ResultPage from "./page/ResultPage";
+import ActuPage from "./page/ActuPage";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/teams" element={<EquipesPage />} />
             <Route path="/tracks" element={<CircuitPage />} />
             <Route path="/results" element={<ResultPage />} />
+            <Route path="/news" element={<ActuPage />} />
           </Routes>
         </main>
       </div>

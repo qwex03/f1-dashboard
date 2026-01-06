@@ -9,7 +9,7 @@ export default function PilotesEtClassement() {
     "https://api.jolpi.ca/ergast/f1/2025/drivers/"
   );
   const classementReq = useFetch(
-    "https://api.jolpi.ca/ergast/f1/current/driverStandings/"
+    "https://api.jolpi.ca/ergast/f1/2025/driverStandings/"
   );
 
   const loading = pilotesReq.loading || classementReq.loading;

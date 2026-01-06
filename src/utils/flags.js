@@ -59,7 +59,7 @@ export const countryCodes = {
   Russia: "RU",
   India: "IN",
   China: "CN",
-  Argentina: "AR",
+  Argentine: "AR",
   "South Africa": "ZA",
   "New Zealand": "NZ",
   Thailand: "TH",
