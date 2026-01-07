@@ -1,16 +1,18 @@
 import { useState } from "react";
 import useFetch from "../hooks/useFetch";
 import { getFlagImg } from "../utils/flags";
+import { useSeason } from "../context/SeasonContext";
 
 function EquipesPage() {
   const [view, setView] = useState("constructeurs"); 
+  const { season } = useSeason();
 
   const { data: constructorsData, loading: loadingConstructors, error: errorConstructors } = useFetch(
-    "https://api.jolpi.ca/ergast/f1/2025/constructors/"
+    `https://api.jolpi.ca/ergast/f1/${season}/constructors/`
   );
 
   const { data: standingsData, loading: loadingStandings, error: errorStandings } = useFetch(
-    "https://api.jolpi.ca/ergast/f1/2025/constructorStandings/"
+    `https://api.jolpi.ca/ergast/f1/${season}/constructorStandings/`
   );
 
   const equipes = constructorsData?.MRData?.ConstructorTable?.Constructors ?? [];

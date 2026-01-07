@@ -2,17 +2,19 @@ import { useState } from "react";
 import useFetch from "../hooks/useFetch";
 import { getFlagImg } from "../utils/flags";
 import GPCarousel from "../composant/GPCarousel";
+import { useSeason } from "../context/SeasonContext";
 
 export default function ResultPage() {
   const [selectedRound, setSelectedRound] = useState(null);
+  const { season } = useSeason();
 
   const { data: racesData, loading: loadingRaces, error: errorRaces } = useFetch(
-    "https://api.jolpi.ca/ergast/f1/2025.json"
+    `https://api.jolpi.ca/ergast/f1/${season}.json`
   );
 
   const { data: resultsData, loading: loadingResults, error: errorResults } = useFetch(
     selectedRound
-      ? `https://api.jolpi.ca/ergast/f1/2025/${selectedRound}/results.json`
+      ? `https://api.jolpi.ca/ergast/f1/${season}/${selectedRound}/results.json`
       : null
   );
 

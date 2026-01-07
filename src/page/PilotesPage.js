@@ -1,15 +1,18 @@
 import { useState } from "react";
 import useFetch from "../hooks/useFetch";
 import { getFlagImg } from "../utils/flags";
+import { useSeason } from "../context/SeasonContext";
+
 
 export default function PilotesEtClassement() {
   const [view, setView] = useState("pilotes"); 
+  const { season } = useSeason();
 
   const pilotesReq = useFetch(
-    "https://api.jolpi.ca/ergast/f1/2025/drivers/"
+    `https://api.jolpi.ca/ergast/f1/${season}/drivers/`
   );
   const classementReq = useFetch(
-    "https://api.jolpi.ca/ergast/f1/2025/driverStandings/"
+    `https://api.jolpi.ca/ergast/f1/${season}/driverStandings/`
   );
 
   const loading = pilotesReq.loading || classementReq.loading;
