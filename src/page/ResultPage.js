@@ -27,7 +27,7 @@ export default function ResultPage() {
         <div className="flex items-center gap-3 px-2">
           <div className="w-1 h-10 bg-red-600 rounded-full"></div>
           <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-            Résultats des Grands Prix 2025
+            Résultats des Grands Prix {season}
           </h1>
         </div>
         <p className="text-gray-600 dark:text-gray-400">
