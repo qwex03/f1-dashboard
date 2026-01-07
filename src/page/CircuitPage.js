@@ -1,9 +1,11 @@
 import useFetch from "../hooks/useFetch";
 import { getFlagImg } from "../utils/flags";
+import { useSeason } from "../context/SeasonContext";
 
 export default function CircuitPage() {
+  const { season } = useSeason();
   const { data, loading, error } = useFetch(
-    "https://api.jolpi.ca/ergast/f1/2025/races/"
+    `https://api.jolpi.ca/ergast/f1/${season}/races/`
   );
 
   const circuits = data?.MRData?.RaceTable?.Races ?? [];
