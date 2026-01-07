@@ -92,7 +92,7 @@ import {
           `}
         >
           <AwardIcon size={20} />
-          {!collapsed && "Circuits"}
+          {!collapsed && "Résultats"}
         </Link>
 
         <Link
