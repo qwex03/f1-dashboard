@@ -1,5 +1,6 @@
 import useFetch from "../hooks/useFetch";
 import Top3Podium from "../composant/Top3Podium";
+import NextGP from "../composant/NextGP";
 
 export default function HomeTop3() {
   const { data, loading, error } = useFetch(
@@ -29,6 +30,7 @@ export default function HomeTop3() {
 
       <div className="mx-auto">
         <Top3Podium top3={top3} />
+        <NextGP />
       </div>
     </div>
   );
