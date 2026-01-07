@@ -60,7 +60,7 @@ export default function ResultPage() {
           {!loadingResults && !errorResults && (
             <>
               <h2 className="text-2xl font-bold mb-4 dark:text-white">
-                Résultats du GP {races.find(r => r.round === selectedRound)?.raceName}
+                Résultats du GP {races.find(r => r.round === selectedRound)?.raceName} {season}
               </h2>
               <div div className="overflow-x-auto">
               <table className="w-full">
