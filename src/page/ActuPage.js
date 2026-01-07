@@ -63,6 +63,13 @@ export default function ActuPage() {
                 year: "numeric",
             })}
             </p>
+
+            {new Date(article.pubDate).toLocaleDateString("fr-FR") ===
+            new Date().toLocaleDateString("fr-FR") && (
+              <span className="text-xs font-semibold text-red-600">
+                Publié aujourd’hui
+              </span>
+            )}
       </div>
     </li>
   ))}
