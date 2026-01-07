@@ -1,10 +1,12 @@
 import useFetch from "../hooks/useFetch";
 import Top3Podium from "../composant/Top3Podium";
 import NextGP from "../composant/NextGP";
+import { useSeason } from "../context/SeasonContext";
 
 export default function HomeTop3() {
+  const { season } = useSeason();
   const { data, loading, error } = useFetch(
-    "https://api.jolpi.ca/ergast/f1/2025/driverstandings/"
+    `https://api.jolpi.ca/ergast/f1/${season}/driverstandings/`
   );
 
   if (loading) return <p className="text-center py-4">Chargement...</p>;

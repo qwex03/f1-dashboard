@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { useSeason } from "../context/SeasonContext";
 
 export default function Top3Podium({ top3 }) {
+  const { season } = useSeason();
   const sizes = {
     1: "h-64 w-60",
     2: "h-56 w-52",
@@ -25,7 +27,7 @@ export default function Top3Podium({ top3 }) {
         <div className="flex items-center gap-3">
           <div className="w-1 h-8 bg-red-600 rounded-full"></div>
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Podium 2025
+            Podium {season}
           </h3>
         </div>
 
