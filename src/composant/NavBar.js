@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
+import SeasonSelefctor from "./SeasonSelector";
 import { 
   MenuIcon, 
   HomeIcon, 
@@ -127,7 +128,7 @@ import {
       >
         Paramètres
       </h2>
-
+      <SeasonSelefctor collapsed={collapsed} />
       <ThemeToggle collapsed={collapsed} />
     </nav>
   );
