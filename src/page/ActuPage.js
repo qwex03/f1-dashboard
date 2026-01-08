@@ -1,11 +1,20 @@
+import { useState } from "react";
 import useRssFeed from "../hooks/useRssFeed";
 
 export default function ActuPage() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const articlesPerPage = 9;
+
   const {
     items: articles,
     loading,
     error,
   } = useRssFeed("https://fr.motorsport.com/rss/f1/news/");
+
+  const totalPages = Math.ceil(articles.length / articlesPerPage);
+  const startIndex = (currentPage - 1) * articlesPerPage;
+  const endIndex = startIndex + articlesPerPage;
+  const currentArticles = articles.slice(startIndex, endIndex);
 
   if (loading) return <p>Chargement des actualités …</p>;
   if (error) return <p>Erreur : {error}</p>;
@@ -25,7 +34,7 @@ export default function ActuPage() {
         </div>
 
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {articles.map((article) => (
+        {currentArticles.map((article) => (
         <li
         key={article.guid}
         className="group overflow-hidden rounded-2xl dark:bg-gray-900 bg-white shadow-md transition hover:shadow-xl"
@@ -74,6 +83,40 @@ export default function ActuPage() {
     </li>
   ))}
 </ul>
+
+        <div className="mt-8 flex items-center justify-center gap-2">
+          <button
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors hover:bg-red-700"
+          >
+            Précédent
+          </button>
+
+          <div className="flex gap-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-2 rounded-lg font-semibold transition-colors ${
+                  currentPage === page
+                    ? "bg-red-600 text-white"
+                    : "bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors hover:bg-red-700"
+          >
+            Suivant
+          </button>
+        </div>
 
     </div>           
     )
