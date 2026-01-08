@@ -97,10 +97,10 @@ function EquipesPage() {
               ? equipes.map((team, index) => (
                   <tr
                     key={team.constructorId}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors animate-fadeIn"
+                    className="group hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors animate-fadeIn"
                     style={{ animationDelay: `${index * 0.05}s` }}
                   >
-                    <td className="px-6 py-4 text-black dark:text-white font-medium">
+                    <td className="px-6 py-4 group-hover:text-red-600 text-black dark:text-white font-medium">
                       <div className="flex flex-row gap-1">
                         <img
                           src={`team-img/${team.name.toLowerCase().replace(/\s+/g, '')}.avif`}
@@ -110,7 +110,7 @@ function EquipesPage() {
                         <span>{team.name}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium flex items-center gap-2">
+                    <td className="px-6 py-4 group-hover:text-red-600 text-gray-900 dark:text-gray-100 font-medium flex items-center gap-2">
                       <div className="flex flex-row gap-2 items-center">
                         {getFlagImg(team.nationality) && (
                           <img
@@ -127,13 +127,13 @@ function EquipesPage() {
               : classement.map((team, index) => (
                   <tr
                     key={team.Constructor.constructorId}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors animate-fadeIn"
+                    className="hover:bg-gray-50 group dark:hover:bg-gray-750 transition-colors animate-fadeIn"
                     style={{ animationDelay: `${index * 0.05}s` }}
                   >
-                    <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium">
+                    <td className="px-6 py-4 group-hover:text-red-600 text-gray-900 dark:text-gray-100 font-medium">
                       {team.position}
                     </td>
-                    <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium">
+                    <td className="px-6 py-4 group-hover:text-red-600 text-gray-900 dark:text-gray-100 font-medium">
                       <div className="flex flex-row gap-1">
                         <img
                           src={`team-img/${team.Constructor.name.toLowerCase().replace(/\s+/g, '')}.avif`}
@@ -143,10 +143,10 @@ function EquipesPage() {
                         <span>{team.Constructor.name}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium ">
+                    <td className="px-6 py-4 group-hover:text-red-600 text-gray-900 dark:text-gray-100 font-medium">
                       {team.points}
                     </td>
-                    <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium ">
+                    <td className="px-6 py-4 group-hover:text-red-600 text-gray-900 dark:text-gray-100 font-medium">
                       {team.wins}
                     </td>
                   </tr>

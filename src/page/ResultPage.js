@@ -86,12 +86,12 @@ export default function ResultPage() {
                     results.map((r, index) => (
                       <tr
                         key={index}
-                        className="hover:bg-gray-50 hover:text-red-600 dark:hover:bg-gray-750 transition-colors animate-fadeIn"
+                        className="hover:bg-gray-50 hover:text-red-600 group dark:hover:bg-gray-750 transition-colors animate-fadeIn"
                         style={{ animationDelay: `${index * 0.03}s` }}
                       >
-                        <td className="px-4 py-3 font-medium dark:text-white">{r.position}</td>
+                        <td className="px-4 py-3 font-medium dark:text-white group-hover:text-red-600">{r.position}</td>
 
-                        <td className="px-4 py-3 font-medium flex items-center gap-2 dark:text-white">
+                        <td className="px-4 py-3 font-medium flex items-center gap-2 dark:text-white group-hover:text-red-600">
                           {getFlagImg(r.Driver.nationality) && (
                             <img
                               src={getFlagImg(r.Driver.nationality)}
@@ -101,7 +101,7 @@ export default function ResultPage() {
                           {r.Driver.givenName} {r.Driver.familyName}
                         </td>
 
-                        <td className="px-4 py-3 dark:text-white">
+                        <td className="px-4 py-3 dark:text-white group-hover:text-red-600">
                             <div className="flex flex-row gap-1">
                                 <img
                                 src={`team-img/${r.Constructor.name.toLowerCase().replace(/\s+/g, '')}.avif`}
@@ -112,7 +112,7 @@ export default function ResultPage() {
                             </div>
                         </td>
 
-                        <td className="px-4 py-3 dark:text-white">
+                        <td className="px-4 py-3 dark:text-white group-hover:text-red-600">
                           {r.Time?.time || r.status}
                         </td>
                       </tr>

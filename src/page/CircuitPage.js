@@ -50,16 +50,16 @@ export default function CircuitPage() {
               {circuits.map((circuit, i) => (
                 <tr
                   key={circuit.round}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors animate-fadeIn"
+                  className="group hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors animate-fadeIn"
                   style={{ animationDelay: `${i * 0.05}s` }}
                 >
-                  <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium">
+                  <td className="group-hover:text-red-600 px-6 py-4 text-gray-900 dark:text-gray-100 font-medium">
                     {circuit.round}
                   </td>
-                  <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium">
+                  <td className="group-hover:text-red-600 px-6 py-4 text-gray-900 dark:text-gray-100 font-medium">
                     {circuit.Circuit.circuitName}
                   </td>
-                  <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium flex items-center gap-2">
+                  <td className="group-hover:text-red-600 px-6 py-4 text-gray-900 dark:text-gray-100 font-medium flex items-center gap-2">
                     {getFlagImg(circuit.Circuit.Location.country) && (
                       <img
                         src={getFlagImg(circuit.Circuit.Location.country)}
@@ -69,7 +69,7 @@ export default function CircuitPage() {
                     )}
                     {circuit.Circuit.Location.country}
                   </td>
-                  <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium">
+                  <td className="group-hover:text-red-600 px-6 py-4 text-gray-900 dark:text-gray-100 font-medium">
                     {circuit.date}
                   </td>
                 </tr>
