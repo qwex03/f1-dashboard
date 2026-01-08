@@ -114,6 +114,12 @@ export default function PilotesEtClassement() {
                 ))}
               </tbody>
             </table>
+          ) : standings.length === 0 ? (
+            <div className="px-6 py-12 text-center">
+              <p className="text-gray-600 dark:text-gray-400 text-lg">
+                La saison n'a pas encore commencé. Le classement sera disponible une fois que les courses auront débuté.
+              </p>
+            </div>
           ) : (
             <table className="w-full">
               <thead>
