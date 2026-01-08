@@ -91,16 +91,16 @@ export default function PilotesEtClassement() {
                 {pilotes.map((p, i) => (
                   <tr
                     key={p.driverId}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors animate-fadeIn"
+                    className="group hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors animate-fadeIn cursor-pointer"
                     style={{ animationDelay: `${i * 0.05}s` }}
                   >
-                    <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium">                       
+                    <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium group-hover:text-red-600 dark:group-hover:text-red-500 transition-colors">                       
                         {p.givenName} {p.familyName}
                     </td>
-                    <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium">                       
+                    <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium group-hover:text-red-600 dark:group-hover:text-red-500 transition-colors">                       
                         {p.dateOfBirth}
                     </td>
-                   <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium flex items-center gap-2">
+                   <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium flex items-center gap-2 group-hover:text-red-600 dark:group-hover:text-red-500 transition-colors">
                     {getFlagImg(p.nationality) && (
                         <img
                         src={getFlagImg(p.nationality)}
@@ -137,14 +137,14 @@ export default function PilotesEtClassement() {
                 {standings.map((s, i) => (
                   <tr
                     key={s.Driver.driverId}
-                    className={`hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors animate-fadeIn ${
+                    className={`group hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors animate-fadeIn cursor-pointer ${
                       s.position === "1" ? "bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20" :
                       s.position === "2" ? "bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-800/50 dark:to-slate-800/50" :
                       s.position === "3" ? "bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20" : ""
                     }`}
                     style={{ animationDelay: `${i * 0.05}s` }}
                   >
-                    <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium">
+                    <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium group-hover:text-red-600 dark:group-hover:text-red-500 transition-colors">
                       <div className="flex items-center gap-3">
                         {s.position === "1" && (
                           <div className="relative">
@@ -175,7 +175,7 @@ export default function PilotesEtClassement() {
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium">
+                    <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium group-hover:text-red-600 dark:group-hover:text-red-500 transition-colors">
                     <div className="flex items-center gap-2">
                         <img
                         src={`/team-img/${s.Constructors[0].name.toLowerCase().replace(/\s+/g, '')}.avif`}
@@ -186,10 +186,10 @@ export default function PilotesEtClassement() {
                     </div>
                     </td>
 
-                    <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-semibold">
+                    <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-semibold group-hover:text-red-600 dark:group-hover:text-red-500 transition-colors">
                       {s.points}
                     </td>
-                    <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-semibold">
+                    <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-semibold group-hover:text-red-600 dark:group-hover:text-red-500 transition-colors">
                       {s.wins}
                     </td>
                   </tr>
