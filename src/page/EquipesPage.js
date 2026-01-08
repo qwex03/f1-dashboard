@@ -124,7 +124,15 @@ function EquipesPage() {
                     </td>
                   </tr>
                 ))
-              : classement.map((team, index) => (
+              : classement.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="px-6 py-12 text-center">
+                    <p className="text-gray-600 dark:text-gray-400 text-lg">
+                      La saison n'a pas encore commencé. Le classement sera disponible une fois que les courses auront débuté.
+                    </p>
+                  </td>
+                </tr>
+              ) : classement.map((team, index) => (
                   <tr
                     key={team.Constructor.constructorId}
                     className="hover:bg-gray-50 group dark:hover:bg-gray-750 transition-colors animate-fadeIn"
