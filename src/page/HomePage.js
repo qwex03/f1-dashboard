@@ -19,17 +19,10 @@ export default function HomeTop3() {
 
   return (
     <div className="space-y-12 pb-16">
-      <div>
-        <div className="flex items-center gap-3 px-2">
-        <div className="w-1 h-10 bg-red-600 rounded-full"></div>
-        <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-           Bienvenue sur Apex F1
-        </h1>
-        </div>
-        <p className="text-gray-600 dark:text-gray-400">
-          Le tableau de bord ultime pour les fans de Formule 1 !
-        </p>
-      </div>
+      <PageHeader 
+        title="Bienvenue sur Apex F1"
+        description="Le tableau de bord ultime pour les fans de Formule 1 !"
+      />
 
       <div className="mx-auto">
         <Top3Podium top3={top3} />
