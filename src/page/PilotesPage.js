@@ -2,7 +2,7 @@ import { useState } from "react";
 import useFetch from "../hooks/useFetch";
 import { getFlagImg } from "../utils/flags";
 import { useSeason } from "../context/SeasonContext";
-
+import TeamImageWithFallback from "../composant/TeamImageWithFallback";
 
 export default function PilotesEtClassement() {
   const [view, setView] = useState("pilotes"); 
@@ -183,10 +183,9 @@ export default function PilotesEtClassement() {
                     </td>
                     <td className="px-6 py-4 text-gray-900 dark:text-gray-100 font-medium group-hover:text-red-600 dark:group-hover:text-red-500 transition-colors">
                     <div className="flex items-center gap-2">
-                        <img
-                        src={`/team-img/${s.Constructors[0].name.toLowerCase().replace(/\s+/g, '')}.avif`}
-                        alt={s.Constructors[0].name}
-                        className="w-6 h-auto"
+                        <TeamImageWithFallback
+                          teamName={s.Constructors[0].name}
+                          className="w-6 h-auto"
                         />
                         <span>{s.Driver.givenName} {s.Driver.familyName}</span>
                     </div>

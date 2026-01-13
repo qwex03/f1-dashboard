@@ -2,6 +2,7 @@ import { useState } from "react";
 import useFetch from "../hooks/useFetch";
 import { getFlagImg } from "../utils/flags";
 import { useSeason } from "../context/SeasonContext";
+import TeamImageWithFallback from "../composant/TeamImageWithFallback";
 
 function EquipesPage() {
   const [view, setView] = useState("constructeurs"); 
@@ -101,11 +102,10 @@ function EquipesPage() {
                     style={{ animationDelay: `${index * 0.05}s` }}
                   >
                     <td className="px-6 py-4 group-hover:text-red-600 text-black dark:text-white font-medium">
-                      <div className="flex flex-row gap-1">
-                        <img
-                          src={`team-img/${team.name.toLowerCase().replace(/\s+/g, '')}.avif`}
-                          alt={team.name}
-                          className="inline-block mr-1 align-middle"
+                      <div className="flex flex-row gap-2 items-center">
+                        <TeamImageWithFallback
+                          teamName={team.name}
+                          className="w-8 h-8 object-contain"
                         />
                         <span>{team.name}</span>
                       </div>
@@ -142,11 +142,10 @@ function EquipesPage() {
                       {team.position}
                     </td>
                     <td className="px-6 py-4 group-hover:text-red-600 text-gray-900 dark:text-gray-100 font-medium">
-                      <div className="flex flex-row gap-1">
-                        <img
-                          src={`team-img/${team.Constructor.name.toLowerCase().replace(/\s+/g, '')}.avif`}
-                          alt={team.Constructor.name}
-                          className="inline-block mr-1 align-middle"
+                      <div className="flex flex-row gap-2 items-center">
+                        <TeamImageWithFallback
+                          teamName={team.Constructor.name}
+                          className="w-8 h-8 object-contain"
                         />
                         <span>{team.Constructor.name}</span>
                       </div>
