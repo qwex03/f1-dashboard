@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useSeason } from "../context/SeasonContext";
+import DriverImageWithFallback from "./DriverImageWithFallback";
 
 export default function Top3Podium({ top3 }) {
   const { season } = useSeason();
@@ -59,9 +60,9 @@ export default function Top3Podium({ top3 }) {
               >
                 <div className="absolute -top-12 w-32 h-32 bg-white dark:bg-gray-100 rounded-full shadow-2xl border-4 border-white"></div>
 
-                <img
-                  src={`/driver-img/${driver.familyName.toLowerCase()}.avif`}
-                  alt={driver.familyName}
+                <DriverImageWithFallback
+                  driverName={driver.givenName}
+                  familyName={driver.familyName}
                   className="absolute -top-10 w-28 h-28 object-cover rounded-full border-4 border-white shadow-xl"
                 />
 
