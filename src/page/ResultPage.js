@@ -2,6 +2,7 @@ import { useState } from "react";
 import useFetch from "../hooks/useFetch";
 import { getFlagImg } from "../utils/flags";
 import GPCarousel from "../composant/GPCarousel";
+import TeamImageWithFallback from "../composant/TeamImageWithFallback";
 import { useSeason } from "../context/SeasonContext";
 
 export default function ResultPage() {
@@ -102,11 +103,10 @@ export default function ResultPage() {
                         </td>
 
                         <td className="px-4 py-3 dark:text-white group-hover:text-red-600">
-                            <div className="flex flex-row gap-1">
-                                <img
-                                src={`team-img/${r.Constructor.name.toLowerCase().replace(/\s+/g, '')}.avif`}
-                                alt={r.Constructor.name}
-                                className="inline-block mr-1 align-middle"
+                            <div className="flex flex-row gap-2 items-center">
+                                <TeamImageWithFallback
+                                  teamName={r.Constructor.name}
+                                  className="w-6 h-auto"
                                 />
                                 <span>{r.Constructor.name}</span>
                             </div>
