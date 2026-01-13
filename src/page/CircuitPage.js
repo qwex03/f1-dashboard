@@ -1,6 +1,7 @@
 import useFetch from "../hooks/useFetch";
 import { getFlagImg } from "../utils/flags";
 import { useSeason } from "../context/SeasonContext";
+import PageHeader from "../composant/PageHeader";
 
 export default function CircuitPage() {
   const { season } = useSeason();
@@ -12,17 +13,10 @@ export default function CircuitPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <div className="flex items-center gap-3 px-2">
-        <div className="w-1 h-10 bg-red-600 rounded-full"></div>
-        <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-           Circuit
-        </h1>
-        </div>
-        <p className="text-gray-600 dark:text-gray-400">
-          Infos sur les circuits de la saison
-        </p>
-      </div>
+      <PageHeader 
+        title="Circuit"
+        description="Infos sur les circuits de la saison"
+      />
 
       {loading && <p className="text-gray-600 dark:text-gray-400">Chargement...</p>}
       {error && <p className="text-red-500">Erreur : {error}</p>}

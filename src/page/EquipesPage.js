@@ -3,6 +3,7 @@ import useFetch from "../hooks/useFetch";
 import { getFlagImg } from "../utils/flags";
 import { useSeason } from "../context/SeasonContext";
 import TeamImageWithFallback from "../composant/TeamImageWithFallback";
+import PageHeader from "../composant/PageHeader";
 
 function EquipesPage() {
   const [view, setView] = useState("constructeurs"); 
@@ -27,17 +28,10 @@ function EquipesPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <div className="flex items-center gap-3 px-2">
-        <div className="w-1 h-10 bg-red-600 rounded-full"></div>
-        <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-           Equipes et Classement
-        </h1>
-        </div>
-        <p className="text-gray-600 dark:text-gray-400">
-          Infos équipes et constructeurs en temps réel
-        </p>
-      </div>
+      <PageHeader 
+        title="Equipes et Classement"
+        description="Infos équipes et constructeurs en temps réel"
+      />
 
       <div className="flex gap-2 bg-gray-100 dark:bg-gray-900 p-1 rounded-xl w-fit shadow mb-4">
         <button

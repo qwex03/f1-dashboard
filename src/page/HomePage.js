@@ -1,6 +1,7 @@
 import useFetch from "../hooks/useFetch";
 import Top3Podium from "../composant/Top3Podium";
 import NextGP from "../composant/NextGP";
+import PageHeader from "../composant/PageHeader";
 import { useSeason } from "../context/SeasonContext";
 
 export default function HomeTop3() {

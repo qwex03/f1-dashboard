@@ -3,6 +3,7 @@ import useFetch from "../hooks/useFetch";
 import { getFlagImg } from "../utils/flags";
 import { useSeason } from "../context/SeasonContext";
 import TeamImageWithFallback from "../composant/TeamImageWithFallback";
+import PageHeader from "../composant/PageHeader";
 
 export default function PilotesEtClassement() {
   const [view, setView] = useState("pilotes"); 
@@ -26,17 +27,10 @@ export default function PilotesEtClassement() {
   return (
     <div className="space-y-8">
 
-      <div>
-        <div className="flex items-center gap-3 px-2">
-        <div className="w-1 h-10 bg-red-600 rounded-full"></div>
-        <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-           Pilotes et Classement
-        </h1>
-        </div>
-        <p className="text-gray-600 dark:text-gray-400">
-          Infos pilotes et classement en temps réel
-        </p>
-      </div>
+      <PageHeader 
+        title="Pilotes et Classement"
+        description="Infos pilotes et classement en temps réel"
+      />
 
       <div className="flex gap-2 bg-gray-100 dark:bg-gray-900 p-1 rounded-xl w-fit shadow">
         <button

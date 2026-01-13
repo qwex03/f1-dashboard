@@ -3,6 +3,7 @@ import useFetch from "../hooks/useFetch";
 import { getFlagImg } from "../utils/flags";
 import GPCarousel from "../composant/GPCarousel";
 import TeamImageWithFallback from "../composant/TeamImageWithFallback";
+import PageHeader from "../composant/PageHeader";
 import { useSeason } from "../context/SeasonContext";
 
 export default function ResultPage() {
@@ -24,17 +25,10 @@ export default function ResultPage() {
 
   return (
     <div className="overflow-x-hidden">
-      <div className="mb-6">
-        <div className="flex items-center gap-3 px-2">
-          <div className="w-1 h-10 bg-red-600 rounded-full"></div>
-          <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-            Résultats des Grands Prix {season}
-          </h1>
-        </div>
-        <p className="text-gray-600 dark:text-gray-400">
-          Cliquez sur un Grand Prix pour afficher le classement complet
-        </p>
-      </div>
+      <PageHeader 
+        title={`Résultats des Grands Prix ${season}`}
+        description="Cliquez sur un Grand Prix pour afficher le classement complet"
+      />
 
       {loadingRaces ? (
         <p className="text-gray-600">Chargement des Grands Prix...</p>

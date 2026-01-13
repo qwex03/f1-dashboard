@@ -1,5 +1,8 @@
 import { useState } from "react";
 import useRssFeed from "../hooks/useRssFeed";
+import ArticleCard from "../composant/ArticleCard";
+import Pagination from "../composant/Pagination";
+import PageHeader from "../composant/PageHeader";
 
 export default function ActuPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,102 +24,22 @@ export default function ActuPage() {
 
   return (
     <div className="overflow-x-hidden">
-        <div className="mb-6">
-        <div className="flex items-center gap-3 px-2">
-            <div className="w-1 h-10 bg-red-600 rounded-full"></div>
-            <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-            Actualités F1 2025
-            </h1>
-        </div>
-        <p className="text-gray-600 dark:text-gray-400">
-            Restez à jour avec les dernières nouvelles et analyses de la saison de Formule 1 2025.
-        </p>
-        </div>
+        <PageHeader 
+          title="Actualités F1 2025"
+          description="Restez à jour avec les dernières nouvelles et analyses de la saison de Formule 1 2025."
+        />
 
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {currentArticles.map((article) => (
-        <li
-        key={article.guid}
-        className="group overflow-hidden rounded-2xl dark:bg-gray-900 bg-white shadow-md transition hover:shadow-xl"
-        >
-        {article.enclosure?.link && (
-            <div className="h-48 overflow-hidden">
-            <img
-                src={article.enclosure.link}
-                alt={article.title}
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                loading="lazy"
-            />
-            </div>
-        )}
+          <ArticleCard key={article.guid} article={article} />
+        ))}
+        </ul>
 
-        <div className="flex flex-col gap-3 p-5">
-            <a
-            href={article.link}
-            target="_blank"
-            rel="noreferrer"
-            className="text-lg font-semibold leading-snug text-gray-900 hover:text-red-600 dark:text-white dark:hover:text-red-400 transition-colors duration-300"
-            >
-            {article.title}
-            </a>
-
-            <p
-            className="text-sm text-gray-600 line-clamp-3 dark:text-gray-400"
-            dangerouslySetInnerHTML={{ __html: article.description }}
-            />
-
-            <p className="mt-auto text-xs text-gray-400">
-            {new Date(article.pubDate).toLocaleDateString("fr-FR", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-            })}
-            </p>
-
-            {new Date(article.pubDate).toLocaleDateString("fr-FR") ===
-          new Date().toLocaleDateString("fr-FR") && (
-            <span className="text-xs font-semibold text-red-600">
-              Publié aujourd’hui
-            </span>
-          )}
-      </div>
-    </li>
-  ))}
-</ul>
-
-        <div className="mt-8 flex items-center justify-center gap-2">
-          <button
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors hover:bg-red-700"
-          >
-            Précédent
-          </button>
-
-          <div className="flex gap-1">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`px-3 py-2 rounded-lg font-semibold transition-colors ${
-                  currentPage === page
-                    ? "bg-red-600 text-white"
-                    : "bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700"
-                }`}
-              >
-                {page}
-              </button>
-            ))}
-          </div>
-
-          <button
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors hover:bg-red-700"
-          >
-            Suivant
-          </button>
-        </div>
+        <Pagination 
+          currentPage={currentPage} 
+          totalPages={totalPages} 
+          onPageChange={setCurrentPage} 
+        />
 
     </div>           
     )
