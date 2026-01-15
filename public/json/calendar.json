@@ -1,0 +1,194 @@
+[
+  {
+    "gp": "Australian Grand Prix",
+    "circuit": "Albert Park Circuit",
+    "city": "Melbourne",
+    "date": "06-08 March 2026",
+    "lat": -37.8468,
+    "lng": 144.9706
+  },
+  {
+    "gp": "Chinese Grand Prix",
+    "circuit": "Shanghai International Circuit",
+    "city": "Shanghai",
+    "date": "13-15 March 2026",
+    "lat": 31.3389,
+    "lng": 121.2200
+  },
+  {
+    "gp": "Japanese Grand Prix",
+    "circuit": "Suzuka Circuit",
+    "city": "Suzuka",
+    "date": "27-29 March 2026",
+    "lat": 34.8431,
+    "lng": 136.5411
+  },
+  {
+    "gp": "Bahrain Grand Prix",
+    "circuit": "Bahrain International Circuit",
+    "city": "Sakhir",
+    "date": "10-12 April 2026",
+    "lat": 26.0325,
+    "lng": 50.5106
+  },
+  {
+    "gp": "Saudi Arabian Grand Prix",
+    "circuit": "Jeddah Corniche Circuit",
+    "city": "Jeddah",
+    "date": "17-19 April 2026",
+    "lat": 21.6405,
+    "lng": 39.0975
+  },
+  {
+    "gp": "Miami Grand Prix",
+    "circuit": "Miami International Autodrome",
+    "city": "Miami",
+    "date": "01-03 May 2026",
+    "lat": 25.9581,
+    "lng": -80.2389
+  },
+  {
+    "gp": "Canadian Grand Prix",
+    "circuit": "Circuit Gilles Villeneuve",
+    "city": "Montreal",
+    "date": "22-24 May 2026",
+    "lat": 45.5017,
+    "lng": -73.5673
+  },
+  {
+    "gp": "Monaco Grand Prix",
+    "circuit": "Circuit de Monaco",
+    "city": "Monaco",
+    "date": "05-07 June 2026",
+    "lat": 43.7347,
+    "lng": 7.4206
+  },
+  {
+    "gp": "Barcelona-Catalunya Grand Prix",
+    "circuit": "Circuit de Barcelona-Catalunya",
+    "city": "Montmeló (Barcelona)",
+    "date": "12-14 June 2026",
+    "lat": 41.57,
+    "lng": 2.2611
+  },
+  {
+    "gp": "Austrian Grand Prix",
+    "circuit": "Red Bull Ring",
+    "city": "Spielberg",
+    "date": "26-28 June 2026",
+    "lat": 47.2197,
+    "lng": 14.7645
+  },
+  {
+    "gp": "British Grand Prix",
+    "circuit": "Silverstone Circuit",
+    "city": "Silverstone",
+    "date": "03-05 July 2026",
+    "lat": 52.0786,
+    "lng": -1.0169
+  },
+  {
+    "gp": "Belgian Grand Prix",
+    "circuit": "Circuit de Spa-Francorchamps",
+    "city": "Stavelot",
+    "date": "17-19 July 2026",
+    "lat": 50.4372,
+    "lng": 5.9714
+  },
+  {
+    "gp": "Hungarian Grand Prix",
+    "circuit": "Hungaroring",
+    "city": "Budapest",
+    "date": "24-26 July 2026",
+    "lat": 47.5789,
+    "lng": 19.2486
+  },
+  {
+    "gp": "Dutch Grand Prix",
+    "circuit": "Circuit Zandvoort",
+    "city": "Zandvoort",
+    "date": "21-23 August 2026",
+    "lat": 52.3885,
+    "lng": 4.5406
+  },
+  {
+    "gp": "Italian Grand Prix",
+    "circuit": "Autodromo Nazionale di Monza",
+    "city": "Monza",
+    "date": "04-06 September 2026",
+    "lat": 45.6156,
+    "lng": 9.2811
+  },
+  {
+    "gp": "Spanish Grand Prix",
+    "circuit": "Circuito de Madring",
+    "city": "Madrid",
+    "date": "11-13 September 2026",
+    "lat": 40.4531,
+    "lng": -3.6104
+  },
+  {
+    "gp": "Azerbaijan Grand Prix",
+    "circuit": "Baku City Circuit",
+    "city": "Baku",
+    "date": "25-27 September 2026",
+    "lat": 40.4093,
+    "lng": 49.8671
+  },
+  {
+    "gp": "Singapore Grand Prix",
+    "circuit": "Marina Bay Street Circuit",
+    "city": "Singapore",
+    "date": "09-11 October 2026",
+    "lat": 1.2894,
+    "lng": 103.8589
+  },
+  {
+    "gp": "United States Grand Prix",
+    "circuit": "Circuit of the Americas",
+    "city": "Austin",
+    "date": "23-25 October 2026",
+    "lat": 30.1328,
+    "lng": -97.6411
+  },
+  {
+    "gp": "Mexican Grand Prix",
+    "circuit": "Autódromo Hermanos Rodríguez",
+    "city": "Mexico City",
+    "date": "30 Oct – 01 Nov 2026",
+    "lat": 19.4030,
+    "lng": -99.0940
+  },
+  {
+    "gp": "Brazilian Grand Prix",
+    "circuit": "Autódromo José Carlos Pace (Interlagos)",
+    "city": "São Paulo",
+    "date": "06-08 November 2026",
+    "lat": -23.7036,
+    "lng": -46.6997
+  },
+  {
+    "gp": "Las Vegas Grand Prix",
+    "circuit": "Las Vegas Strip Circuit",
+    "city": "Las Vegas",
+    "date": "19-21 November 2026",
+    "lat": 36.1699,
+    "lng": -115.1398
+  },
+  {
+    "gp": "Qatar Grand Prix",
+    "circuit": "Lusail International Circuit",
+    "city": "Lusail",
+    "date": "27-29 November 2026",
+    "lat": 25.4161,
+    "lng": 51.5100
+  },
+  {
+    "gp": "Abu Dhabi Grand Prix",
+    "circuit": "Yas Marina Circuit",
+    "city": "Abu Dhabi",
+    "date": "04-06 December 2026",
+    "lat": 24.4672,
+    "lng": 54.6031
+  }
+]
