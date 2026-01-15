@@ -7,6 +7,7 @@ import CircuitPage from "./page/CircuitPage";
 import HomePage from "./page/HomePage";
 import ResultPage from "./page/ResultPage";
 import ActuPage from "./page/ActuPage";
+import TestPage from "./page/TestPage";
 
 function App() {
   const [collapsed, setCollapsed] = useState(false);
@@ -33,6 +34,7 @@ function App() {
             <Route path="/tracks" element={<CircuitPage />} />
             <Route path="/results" element={<ResultPage />} />
             <Route path="/news" element={<ActuPage />} />
+            <Route path="/test" element={<TestPage />} />
           </Routes>
         </main>
       </div>
