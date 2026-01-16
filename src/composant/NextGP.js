@@ -22,9 +22,9 @@ export default function NextGPCarousel() {
 
   const scroll = (direction) => {
     if (carouselRef.current) {
-      const width = carouselRef.current.offsetWidth;
+      const cardWidth = 320 + 24; 
       carouselRef.current.scrollBy({
-        left: direction === "left" ? -width : width,
+        left: direction === "left" ? -(cardWidth * 2) : cardWidth * 2,
         behavior: "smooth",
       });
     }
@@ -36,7 +36,7 @@ export default function NextGPCarousel() {
 
   return (
     <div className="w-full relative py-8">
-      <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+      <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
         Prochains Grands Prix
       </h2>
 
@@ -56,14 +56,14 @@ export default function NextGPCarousel() {
 
       <div
         ref={carouselRef}
-        className="flex overflow-x-auto scroll-smooth space-x-6 px-4 w-full hide-scrollbar"
+        className="flex overflow-x-auto scroll-smooth space-x-6 px-4 w-full hide-scrollbar scroll-snap-type-x-mandatory"
       >
         {upcomingRaces.map((race, index) => {
           const isNext = index === 0; 
           return (
             <div
               key={race.round}
-              className={`flex-shrink-0 w-80 p-6 rounded-xl shadow-xl border transition-transform hover:scale-105 ${
+              className={`flex-shrink-0 w-80 p-6 rounded-xl shadow-xl border transition-transform scroll-snap-align-start ${
                 isNext
                   ? "bg-gradient-to-br from-red-600 to-red-800 text-white border-red-700"
                   : "bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
