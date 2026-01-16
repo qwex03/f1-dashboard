@@ -4,6 +4,7 @@ import { getFlagImg } from "../utils/flags";
 import { useSeason } from "../context/SeasonContext";
 import TeamImageWithFallback from "../composant/TeamImageWithFallback";
 import PageHeader from "../composant/PageHeader";
+import ViewToggle from "../composant/ViewToggle";
 
 export default function PilotesEtClassement() {
   const [view, setView] = useState("pilotes"); 
@@ -32,29 +33,14 @@ export default function PilotesEtClassement() {
         description="Infos pilotes et classement en temps réel"
       />
 
-      <div className="flex gap-2 bg-gray-100 dark:bg-gray-900 p-1 rounded-xl w-fit shadow">
-        <button
-          onClick={() => setView("pilotes")}
-          className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-            view === "pilotes"
-              ? "bg-red-600 dark:bg-gray-700 shadow text-white"
-              : "text-gray-600 dark:text-gray-400"
-          }`}
-        >
-          Pilotes engagés
-        </button>
-
-        <button
-          onClick={() => setView("classement")}
-          className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-            view === "classement"
-              ? "bg-red-600 dark:bg-gray-700 shadow text-white"
-              : "text-gray-600 dark:text-gray-400"
-          }`}
-        >
-          Classement actuel
-        </button>
-      </div>
+      <ViewToggle
+        views={[
+          { label: 'Pilotes engagés', value: 'pilotes' },
+          { label: 'Classement actuel', value: 'classement' }
+        ]}
+        currentView={view}
+        onViewChange={setView}
+      />
 
       {loading && (
         <p className="text-gray-600 dark:text-gray-400">Chargement...</p>

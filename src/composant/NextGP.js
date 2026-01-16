@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import useFetch from "../hooks/useFetch";
-import { ChevronLeft, ChevronRight } from "lucide-react"; 
+import { ChevronLeft, ChevronRight, Clock, Flag, Trophy } from "lucide-react";
+import { getFlagImg } from "../utils/flags"; 
 
 export default function NextGPCarousel() {
   const { data, loading, error } = useFetch(
@@ -62,23 +63,79 @@ export default function NextGPCarousel() {
           return (
             <div
               key={race.round}
-              className={`flex-shrink-0 w-80 p-6 rounded-xl shadow-lg border ${
+              className={`flex-shrink-0 w-80 p-6 rounded-xl shadow-xl border transition-transform hover:scale-105 ${
                 isNext
-                  ? "bg-red-600 text-white border-red-700"
-                  : "bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-200 dark:border-gray-700"
+                  ? "bg-gradient-to-br from-red-600 to-red-800 text-white border-red-700"
+                  : "bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
               }`}
             >
-              <h3 className="text-xl font-bold mb-2">{race.raceName}</h3>
-              <p className="text-sm mb-1">
+              <h3 className="text-xl font-bold mb-3">{race.raceName}</h3>
+              <p className="text-sm mb-2">
                 <span className="font-semibold">Circuit :</span> {race.Circuit.circuitName}
               </p>
-              <p className="text-sm mb-1">
-                <span className="font-semibold">Pays :</span> {race.Circuit.Location.country}
+              <p className="text-sm mb-3 flex items-center">
+                <span className="font-semibold mr-1">Pays :</span>
+                {getFlagImg(race.Circuit.Location.country) && (
+                  <img
+                    src={getFlagImg(race.Circuit.Location.country)}
+                    className="w-5 h-4 mr-2 rounded-sm"
+                  />
+                )}
+                {race.Circuit.Location.country}
               </p>
-              <p className="text-sm">
+              <p className="text-sm mb-4">
                 <span className="font-semibold">Date :</span>{" "}
                 {new Date(race.date).toLocaleDateString()}
               </p>
+              <div className="text-sm space-y-2">
+                <p className="flex items-center">
+                  <Clock className="h-4 w-4 mr-2 flex-shrink-0" />
+                  <span className="font-semibold">FP1 :</span>{" "}
+                  {race.FirstPractice
+                    ? `${new Date(race.FirstPractice.date).toLocaleDateString()} à ${race.FirstPractice.time?.slice(0, 5)}`
+                    : "N/A"}
+                </p>
+                {race.Sprint ? (
+                  <>
+                    <p className="flex items-center">
+                      <Flag className="h-4 w-4 mr-2 flex-shrink-0" />
+                      <span className="font-semibold">Qualif Sprint :</span>{" "}
+                      {race.Qualifying
+                        ? `${new Date(race.Qualifying.date).toLocaleDateString()} à ${race.Qualifying.time?.slice(0, 5)}`
+                        : "N/A"}
+                    </p>
+                    <p className="flex items-center">
+                      <Trophy className="h-4 w-4 mr-2 flex-shrink-0" />
+                      <span className="font-semibold">Sprint :</span>{" "}
+                      {race.Sprint
+                        ? `${new Date(race.Sprint.date).toLocaleDateString()} à ${race.Sprint.time?.slice(0, 5)}`
+                        : "N/A"}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="flex items-center">
+                      <Clock className="h-4 w-4 mr-2 flex-shrink-0" />
+                      <span className="font-semibold">FP2 :</span>{" "}
+                      {race.SecondPractice
+                        ? `${new Date(race.SecondPractice.date).toLocaleDateString()} à ${race.SecondPractice.time?.slice(0, 5)}`
+                        : "N/A"}
+                    </p>
+                    <p className="flex items-center">
+                      <Flag className="h-4 w-4 mr-2 flex-shrink-0" />
+                      <span className="font-semibold">Qualif :</span>{" "}
+                      {race.Qualifying
+                        ? `${new Date(race.Qualifying.date).toLocaleDateString()} à ${race.Qualifying.time?.slice(0, 5)}`
+                        : "N/A"}
+                    </p>
+                  </>
+                )}
+                <p className="flex items-center">
+                  <Flag className="h-4 w-4 mr-2 flex-shrink-0" />
+                  <span className="font-semibold">Course :</span>{" "}
+                  {new Date(race.date).toLocaleDateString()} à {race.time?.slice(0, 5)}
+                </p>
+              </div>
             </div>
           );
         })}

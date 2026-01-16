@@ -4,6 +4,7 @@ import { getFlagImg } from "../utils/flags";
 import { useSeason } from "../context/SeasonContext";
 import TeamImageWithFallback from "../composant/TeamImageWithFallback";
 import PageHeader from "../composant/PageHeader";
+import ViewToggle from "../composant/ViewToggle";
 
 function EquipesPage() {
   const [view, setView] = useState("constructeurs"); 
@@ -33,29 +34,14 @@ function EquipesPage() {
         description="Infos équipes et constructeurs en temps réel"
       />
 
-      <div className="flex gap-2 bg-gray-100 dark:bg-gray-900 p-1 rounded-xl w-fit shadow mb-4">
-        <button
-          onClick={() => setView("constructeurs")}
-          className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-            view === "constructeurs"
-              ? "bg-red-600 dark:bg-gray-700 shadow text-white"
-              : "bg-white-600 text-gray-600 dark:text-gray-400"
-          }`}
-        >
-          Constructeurs engagés
-        </button>
-
-        <button
-          onClick={() => setView("classement")}
-          className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-            view === "classement"
-              ? "bg-red-600 dark:bg-gray-700 shadow text-white"
-              : "bg-white-600 text-gray-600 dark:text-gray-400"
-          }`}
-        >
-          Classement actuel
-        </button>
-      </div>
+      <ViewToggle
+        views={[
+          { label: 'Constructeurs engagés', value: 'constructeurs' },
+          { label: 'Classement actuel', value: 'classement' }
+        ]}
+        currentView={view}
+        onViewChange={setView}
+      />
 
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700">
         <table className="w-full">

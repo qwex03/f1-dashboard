@@ -4,10 +4,12 @@ import { getFlagImg } from "../utils/flags";
 import GPCarousel from "../composant/GPCarousel";
 import TeamImageWithFallback from "../composant/TeamImageWithFallback";
 import PageHeader from "../composant/PageHeader";
+import ViewToggle from "../composant/ViewToggle";
 import { useSeason } from "../context/SeasonContext";
 
 export default function ResultPage() {
   const [selectedRound, setSelectedRound] = useState(null);
+  const [viewMode, setViewMode] = useState('global');
   const { season } = useSeason();
 
   const { data: racesData, loading: loadingRaces, error: errorRaces } = useFetch(
@@ -20,6 +22,10 @@ export default function ResultPage() {
       : null
   );
 
+  const { data: seasonResultsData, loading: loadingSeason, error: errorSeason } = useFetch(
+    `https://api.jolpi.ca/ergast/f1/${season}/results.json?limit=1000`
+  );
+
   const races = racesData?.MRData?.RaceTable?.Races ?? [];
   const results = resultsData?.MRData?.RaceTable?.Races?.[0]?.Results ?? [];
 
@@ -28,6 +34,15 @@ export default function ResultPage() {
       <PageHeader 
         title={`Résultats des Grands Prix ${season}`}
         description="Cliquez sur un Grand Prix pour afficher le classement complet"
+      />
+
+      <ViewToggle
+        views={[
+          { label: 'Vue globale', value: 'global' },
+          { label: 'Vue par GP', value: 'gp' }
+        ]}
+        currentView={viewMode}
+        onViewChange={setViewMode}
       />
 
       {loadingRaces ? (
@@ -65,6 +80,7 @@ export default function ResultPage() {
                     <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Pilote</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Écurie</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Temps</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Points</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -108,6 +124,9 @@ export default function ResultPage() {
 
                         <td className="px-4 py-3 dark:text-white group-hover:text-red-600">
                           {r.Time?.time || r.status}
+                        </td>
+                        <td className="px-4 py-3 dark:text-white group-hover:text-red-600">
+                          {r.points}
                         </td>
                       </tr>
                     ))
