@@ -22,10 +22,6 @@ export default function ResultPage() {
       : null
   );
 
-  const { data: seasonResultsData, loading: loadingSeason, error: errorSeason } = useFetch(
-    `https://api.jolpi.ca/ergast/f1/${season}/results.json?limit=1000`
-  );
-
   const races = racesData?.MRData?.RaceTable?.Races ?? [];
   const results = resultsData?.MRData?.RaceTable?.Races?.[0]?.Results ?? [];
 
@@ -107,6 +103,7 @@ export default function ResultPage() {
                             <img
                               src={getFlagImg(r.Driver.nationality)}
                               className="w-6 h-4"
+                              alt={r.Driver.nationality}
                             />
                           )}
                           {r.Driver.givenName} {r.Driver.familyName}

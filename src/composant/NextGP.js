@@ -79,6 +79,7 @@ export default function NextGPCarousel() {
                   <img
                     src={getFlagImg(race.Circuit.Location.country)}
                     className="w-5 h-4 mr-2 rounded-sm"
+                    alt={race.Circuit.Location.country}
                   />
                 )}
                 {race.Circuit.Location.country}

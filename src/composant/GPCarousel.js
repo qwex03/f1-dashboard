@@ -60,7 +60,6 @@ export default function GPCarousel({ rounds, selectedRound, setSelectedRound }) 
 
       <div className="flex gap-3 justify-center items-center flex-1 min-w-0">
         {rounds.slice(currentIndex, currentIndex + visibleItems).map((round, index) => {
-          const actualIndex = currentIndex + index;
           return (
             <button
               key={round.round}
