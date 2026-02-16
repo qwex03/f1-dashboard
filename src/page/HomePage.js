@@ -15,7 +15,12 @@ export default function HomeTop3() {
 
   const standings =
     data?.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings || [];
-  const top3 = standings.slice(0, 3);
+  const currentTop3 = standings.slice(0, 3);
+  const hasCurrentPodium = currentTop3.length > 0;
+  const top3 = hasCurrentPodium ? currentTop3 : [];
+  const fallbackMessage = hasCurrentPodium
+    ? null
+    : `La saison ${season} n'a pas encore commencé.`;
 
   return (
     <div className="space-y-12 pb-16">
@@ -25,7 +30,11 @@ export default function HomeTop3() {
       />
 
       <div className="mx-auto">
-        <Top3Podium top3={top3} />
+        <Top3Podium
+          top3={top3}
+          displayedSeason={season}
+          fallbackMessage={fallbackMessage}
+        />
         <NextGP />
       </div>
     </div>
