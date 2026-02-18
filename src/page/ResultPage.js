@@ -32,7 +32,7 @@ export default function ResultPage() {
     data: standingsData,
     loading: loadingStandings,
     error: errorStandings,
-  } = useFetch(`https://api.jolpi.ca/ergast/f1/${season}/driverstandings/`);
+  } = useFetch(`https://api.jolpi.ca/ergast/f1/${season}/driverStandings.json`);
 
   const races = racesData?.MRData?.RaceTable?.Races ?? [];
   const results = resultsData?.MRData?.RaceTable?.Races?.[0]?.Results ?? [];
@@ -45,6 +45,24 @@ export default function ResultPage() {
   useEffect(() => {
     let cancelled = false;
 
+    async function fetchJsonWithRetry(url, retries = 2, delayMs = 300) {
+      for (let attempt = 0; attempt <= retries; attempt += 1) {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+          }
+          return await res.json();
+        } catch (error) {
+          if (attempt === retries) {
+            throw error;
+          }
+          await new Promise((resolve) => setTimeout(resolve, delayMs * (attempt + 1)));
+        }
+      }
+      throw new Error("Unknown fetch error");
+    }
+
     async function fetchAllSeasonResults() {
       setLoadingSeasonResults(true);
       setErrorSeasonResults(null);
@@ -56,14 +74,9 @@ export default function ResultPage() {
         const racesByRound = new Map();
 
         while (offset < total) {
-          const res = await fetch(
+          const json = await fetchJsonWithRetry(
             `https://api.jolpi.ca/ergast/f1/${season}/results.json?limit=${pageSize}&offset=${offset}`
           );
-          if (!res.ok) {
-            throw new Error(`HTTP ${res.status}`);
-          }
-
-          const json = await res.json();
           const mrData = json?.MRData ?? {};
           const pageRaces = mrData?.RaceTable?.Races ?? [];
           total = Number(mrData.total ?? 0);
