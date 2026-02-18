@@ -22,8 +22,7 @@ function EquipesPage() {
 
   const [evolutionData, setEvolutionData] = useState([]);
   const [evolutionTeams, setEvolutionTeams] = useState([]);
-  const [loadingEvolution, setLoadingEvolution] = useState(false);
-  const [errorEvolution, setErrorEvolution] = useState(null);
+
 
   const { data: constructorsData, loading: loadingConstructors, error: errorConstructors } = useFetch(
     `https://api.jolpi.ca/ergast/f1/${season}/constructors/`
@@ -41,16 +40,6 @@ function EquipesPage() {
     let cancelled = false;
 
     async function fetchEvolution() {
-      if (!maxRound) {
-        setEvolutionData([]);
-        setEvolutionTeams([]);
-        setLoadingEvolution(false);
-        setErrorEvolution(null);
-        return;
-      }
-
-      setLoadingEvolution(true);
-      setErrorEvolution(null);
 
       try {
         const roundRows = new Map();
@@ -123,15 +112,9 @@ function EquipesPage() {
           setEvolutionTeams(teams);
         }
       } catch (error) {
-        if (!cancelled) {
-          setErrorEvolution(error.message || "Erreur pendant le chargement de l'evolution.");
-          setEvolutionData([]);
-          setEvolutionTeams([]);
-        }
+       console.error("Erreur lors de la recuperation de l'evolution du classement :", error);
       } finally {
-        if (!cancelled) {
-          setLoadingEvolution(false);
-        }
+        console.log("Fin de la tentative de recuperation de l'evolution du classement.");
       }
     }
 
@@ -145,7 +128,6 @@ function EquipesPage() {
   useEffect(() => {
     setEvolutionData([]);
     setEvolutionTeams([]);
-    setErrorEvolution(null);
   }, [season]);
 
   const lineColors = [

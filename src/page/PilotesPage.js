@@ -5,16 +5,6 @@ import { useSeason } from "../context/SeasonContext";
 import TeamImageWithFallback from "../composant/TeamImageWithFallback";
 import PageHeader from "../composant/PageHeader";
 import ViewToggle from "../composant/ViewToggle";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
 
 
 export default function PilotesEtClassement() {
