@@ -24,11 +24,11 @@ function EquipesPage() {
   const [evolutionTeams, setEvolutionTeams] = useState([]);
 
 
-  const { data: constructorsData, loading: loadingConstructors, error: errorConstructors } = useFetch(
+  const { data: constructorsData } = useFetch(
     `https://api.jolpi.ca/ergast/f1/${season}/constructors/`
   );
 
-  const { data: standingsData, loading: loadingStandings, error: errorStandings } = useFetch(
+  const { data: standingsData  } = useFetch(
     `https://api.jolpi.ca/ergast/f1/${season}/constructorStandings/`
   );
 
