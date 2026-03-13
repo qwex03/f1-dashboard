@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
 import SeasonSelefctor from "./SeasonSelector";
+import "./NavBar.css";
 import { 
   MenuIcon, 
   HomeIcon, 
@@ -19,10 +20,10 @@ import {
 
   return (
     <nav
-    className={`
+    className={`navbar-scrollbar
     fixed top-0 left-0
     bg-gray-100 dark:bg-gray-900 shadow p-4 flex flex-col gap-6
-    h-screen
+    h-screen overflow-y-auto overflow-x-hidden
     transition-all duration-300
     ${collapsed ? "w-20" : "w-64"}
     `}>
@@ -37,7 +38,7 @@ import {
           onClick={() => setCollapsed(!collapsed)}
           className="px-2 py-2 rounded bg-gray-300 dark:bg-gray-700 text-black dark:text-white transition-colors duration-300 flex items-center"
         >
-          <MenuIcon size={20} />
+          <MenuIcon size={28} />
         </button>
       </div>
 
@@ -59,7 +60,7 @@ import {
             ${isActive("/") ? "bg-red-600 text-white" : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-red-600 hover:text-white"}
           `}
         >
-          <HomeIcon size={20} />
+          <HomeIcon size={collapsed ? 32 : 28} />
           {!collapsed && "Home"}
         </Link>
 
@@ -70,7 +71,7 @@ import {
             ${isActive("/drivers") ? "bg-red-600 text-white" : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-red-600 hover:text-white"}
           `}
         >
-          <UserIcon size={20} />
+          <UserIcon size={collapsed ? 32 : 28} />
           {!collapsed && "Pilotes"}
         </Link>
 
@@ -81,7 +82,7 @@ import {
             ${isActive("/teams") ? "bg-red-600 text-white" : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-red-600 hover:text-white"}
           `}
         >
-          <UsersIcon size={20} />
+          <UsersIcon size={collapsed ? 32 : 28} />
           {!collapsed && "Équipes"}
         </Link>
 
@@ -92,7 +93,7 @@ import {
             ${isActive("/results") ? "bg-red-600 text-white" : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-red-600 hover:text-white"}
           `}
         >
-          <AwardIcon size={20} />
+          <AwardIcon size={collapsed ? 32 : 28} />
           {!collapsed && "Résultats"}
         </Link>
 
@@ -103,7 +104,7 @@ import {
             ${isActive("/tracks") ? "bg-red-600 text-white" : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-red-600 hover:text-white"}
           `}
         >
-          <MapPinIcon size={20} />
+          <MapPinIcon size={collapsed ? 32 : 28} />
           {!collapsed && "Circuits"}
         </Link>
 
@@ -114,7 +115,7 @@ import {
             ${isActive("/news") ? "bg-red-600 text-white" : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-red-600 hover:text-white"}
           `}
         >
-          <NewspaperIcon size={20} />
+          <NewspaperIcon size={collapsed ? 32 : 28} />
           {!collapsed && "Actualités"}
         </Link>
 
@@ -125,7 +126,7 @@ import {
             ${isActive("/calendrier") ? "bg-red-600 text-white" : "bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-200 hover:bg-red-600 hover:text-white"}
           `}
         >
-          <EarthIcon size={20} />
+          <EarthIcon size={collapsed ? 32 : 28} />
           {!collapsed && "3D Calendrier"}
         </Link>
       </div>

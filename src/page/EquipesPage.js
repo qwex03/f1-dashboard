@@ -22,6 +22,7 @@ function EquipesPage() {
 
   const [evolutionData, setEvolutionData] = useState([]);
   const [evolutionTeams, setEvolutionTeams] = useState([]);
+  const [evolutionTeamNames, setEvolutionTeamNames] = useState({});
 
 
   const { data: constructorsData } = useFetch(
@@ -39,48 +40,66 @@ function EquipesPage() {
   useEffect(() => {
     let cancelled = false;
 
-    async function fetchEvolution() {
+    async function fetchJsonWithRetry(url, retries = 2, delayMs = 300) {
+      for (let attempt = 0; attempt <= retries; attempt += 1) {
+        try {
+          const res = await fetch(url);
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+          }
+          return await res.json();
+        } catch (error) {
+          if (attempt === retries) {
+            throw error;
+          }
+          await new Promise((resolve) => setTimeout(resolve, delayMs * (attempt + 1)));
+        }
+      }
+      throw new Error("Unknown fetch error");
+    }
 
+    async function fetchEvolution() {
       try {
+        if (maxRound <= 0) {
+          if (!cancelled) {
+            setEvolutionData([]);
+            setEvolutionTeams([]);
+            setEvolutionTeamNames({});
+          }
+          return;
+        }
+
         const roundRows = new Map();
-        const teams = [];
+        const teamsSet = new Set();
+        const teamNamesById = {};
 
         for (let round = 1; round <= maxRound; round += 1) {
-          let json = null;
-
-          for (let attempt = 0; attempt < 2; attempt += 1) {
-            try {
-              const response = await fetch(
-                `https://api.jolpi.ca/ergast/f1/${season}/${round}/constructorStandings/`
-              );
-
-              if (!response.ok) {
-                continue;
-              }
-
-              json = await response.json();
-              break;
-            } catch {
-              
-            }
-          }
-
-          const standings = json?.MRData?.StandingsTable?.StandingsLists?.[0]?.ConstructorStandings;
-          if (!standings || standings.length === 0) {
+          const json = await fetchJsonWithRetry(
+            `https://api.jolpi.ca/ergast/f1/${season}/${round}/constructorStandings/`,
+            4,
+            400
+          );
+          const constructorStandings =
+            json?.MRData?.StandingsTable?.StandingsLists?.[0]?.ConstructorStandings ?? [];
+          if (constructorStandings.length === 0) {
             continue;
           }
 
           const row = { round: `R${round}` };
-          standings.forEach((team) => {
+          constructorStandings.forEach((team) => {
+            const teamId = team?.Constructor?.constructorId;
             const teamName = team?.Constructor?.name;
-            if (!teamName) return;
-            if (!teams.includes(teamName)) {
-              teams.push(teamName);
-            }
-            row[teamName] = Number(team.points);
-          });
+            if (!teamId) return;
 
+            teamsSet.add(teamId);
+            if (teamName) {
+              teamNamesById[teamId] = teamName;
+            }
+            row[teamId] = Number(team.points);
+          });
           roundRows.set(round, row);
+
+          await new Promise((resolve) => setTimeout(resolve, 120));
         }
 
         if (roundRows.size === 0) {
@@ -88,6 +107,7 @@ function EquipesPage() {
         }
 
         const rows = [];
+        const teams = Array.from(teamsSet);
         const lastPointsByTeam = {};
         for (let i = 0; i < teams.length; i += 1) {
           lastPointsByTeam[teams[i]] = 0;
@@ -96,11 +116,11 @@ function EquipesPage() {
         for (let round = 1; round <= maxRound; round += 1) {
           const row = roundRows.get(round) ?? { round: `R${round}` };
 
-          teams.forEach((teamName) => {
-            if (typeof row[teamName] === "number") {
-              lastPointsByTeam[teamName] = row[teamName];
+          teams.forEach((teamId) => {
+            if (typeof row[teamId] === "number") {
+              lastPointsByTeam[teamId] = row[teamId];
             } else {
-              row[teamName] = lastPointsByTeam[teamName];
+              row[teamId] = lastPointsByTeam[teamId];
             }
           });
 
@@ -110,6 +130,7 @@ function EquipesPage() {
         if (!cancelled) {
           setEvolutionData(rows);
           setEvolutionTeams(teams);
+          setEvolutionTeamNames(teamNamesById);
         }
       } catch (error) {
        console.error("Erreur lors de la recuperation de l'evolution du classement :", error);
@@ -128,6 +149,7 @@ function EquipesPage() {
   useEffect(() => {
     setEvolutionData([]);
     setEvolutionTeams([]);
+    setEvolutionTeamNames({});
   }, [season]);
 
   const lineColors = [
@@ -251,11 +273,12 @@ function EquipesPage() {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  {evolutionTeams.map((teamName, index) => (
+                  {evolutionTeams.map((teamId, index) => (
                     <Line
-                      key={teamName}
-                      type="monotone"
-                      dataKey={teamName}
+                      key={teamId}
+                      type="linear"
+                      dataKey={teamId}
+                      name={evolutionTeamNames[teamId] ?? teamId}
                       stroke={lineColors[index % lineColors.length]}
                       strokeWidth={2}
                       dot={false}

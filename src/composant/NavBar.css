@@ -1,0 +1,70 @@
+/* ScrollBar Styling */
+.navbar-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.navbar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.navbar-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.navbar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+}
+
+.navbar-scrollbar {
+  scrollbar-color: #dc2626 transparent;
+  scrollbar-width: thin;
+}
+
+.dark .navbar-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #dc2626 0%, #7f1d1d 100%);
+}
+
+.dark .navbar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ef4444 0%, #991b1b 100%);
+}
+
+.main-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.main-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.main-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.main-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+}
+
+.main-scrollbar {
+  scrollbar-color: #dc2626 transparent;
+  scrollbar-width: thin;
+}
+
+.dark .main-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #dc2626 0%, #7f1d1d 100%);
+}
+
+.dark .main-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ef4444 0%, #991b1b 100%);
+}
+
+/* Responsive Icon Sizing for small heights */
+@media (max-height: 600px) {
+  .navbar-scrollbar svg {
+    width: 28px !important;
+    height: 28px !important;
+  }
+}

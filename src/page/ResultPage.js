@@ -37,8 +37,11 @@ export default function ResultPage() {
   const races = racesData?.MRData?.RaceTable?.Races ?? [];
   const results = resultsData?.MRData?.RaceTable?.Races?.[0]?.Results ?? [];
   const [seasonResultRaces, setSeasonResultRaces] = useState([]);
+  const [seasonSprintRaces, setSeasonSprintRaces] = useState([]);
   const [loadingSeasonResults, setLoadingSeasonResults] = useState(false);
+  const [loadingSeasonSprints, setLoadingSeasonSprints] = useState(false);
   const [errorSeasonResults, setErrorSeasonResults] = useState(null);
+  const [errorSeasonSprints, setErrorSeasonSprints] = useState(null);
   const standings =
     standingsData?.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings ?? [];
 
@@ -63,46 +66,52 @@ export default function ResultPage() {
       throw new Error("Unknown fetch error");
     }
 
+    async function fetchPaginatedRaces(urlPath, resultKey) {
+      const pageSize = 100;
+      let offset = 0;
+      let total = Infinity;
+      const racesByRound = new Map();
+
+      while (offset < total) {
+        const json = await fetchJsonWithRetry(
+          `https://api.jolpi.ca/ergast/f1/${season}/${urlPath}.json?limit=${pageSize}&offset=${offset}`
+        );
+        const mrData = json?.MRData ?? {};
+        const pageRaces = mrData?.RaceTable?.Races ?? [];
+        total = Number(mrData.total ?? 0);
+        const currentLimit = Number(mrData.limit ?? pageSize);
+
+        pageRaces.forEach((race) => {
+          const existing = racesByRound.get(race.round);
+          if (!existing) {
+            racesByRound.set(race.round, {
+              ...race,
+              [resultKey]: [...(race[resultKey] ?? [])],
+            });
+            return;
+          }
+
+          existing[resultKey] = [
+            ...(existing[resultKey] ?? []),
+            ...(race[resultKey] ?? []),
+          ];
+        });
+
+        if (currentLimit <= 0) break;
+        offset += currentLimit;
+      }
+
+      return Array.from(racesByRound.values()).sort(
+        (a, b) => Number(a.round) - Number(b.round)
+      );
+    }
+
     async function fetchAllSeasonResults() {
       setLoadingSeasonResults(true);
       setErrorSeasonResults(null);
 
       try {
-        const pageSize = 100;
-        let offset = 0;
-        let total = Infinity;
-        const racesByRound = new Map();
-
-        while (offset < total) {
-          const json = await fetchJsonWithRetry(
-            `https://api.jolpi.ca/ergast/f1/${season}/results.json?limit=${pageSize}&offset=${offset}`
-          );
-          const mrData = json?.MRData ?? {};
-          const pageRaces = mrData?.RaceTable?.Races ?? [];
-          total = Number(mrData.total ?? 0);
-          const currentLimit = Number(mrData.limit ?? pageSize);
-
-          pageRaces.forEach((race) => {
-            const existing = racesByRound.get(race.round);
-            if (!existing) {
-              racesByRound.set(race.round, {
-                ...race,
-                Results: [...(race.Results ?? [])],
-              });
-              return;
-            }
-
-            existing.Results = [...(existing.Results ?? []), ...(race.Results ?? [])];
-          });
-
-          if (currentLimit <= 0) break;
-          offset += currentLimit;
-        }
-
-        const mergedRaces = Array.from(racesByRound.values()).sort(
-          (a, b) => Number(a.round) - Number(b.round)
-        );
-
+        const mergedRaces = await fetchPaginatedRaces("results", "Results");
         if (!cancelled) {
           setSeasonResultRaces(mergedRaces);
         }
@@ -118,6 +127,7 @@ export default function ResultPage() {
       }
     }
 
+    
     fetchAllSeasonResults();
 
     return () => {
@@ -134,7 +144,23 @@ export default function ResultPage() {
       if (!pointsByDriverByRound.has(driverId)) {
         pointsByDriverByRound.set(driverId, {});
       }
-      pointsByDriverByRound.get(driverId)[race.round] = Number(r.points);
+      const byRound = pointsByDriverByRound.get(driverId);
+      byRound[race.round] = Number(byRound[race.round] || 0) + Number(r.points || 0);
+
+      if (!driversById.has(driverId)) {
+        driversById.set(driverId, r.Driver);
+      }
+    });
+  });
+
+  seasonSprintRaces.forEach((race) => {
+    race.SprintResults?.forEach((r) => {
+      const driverId = r.Driver.driverId;
+      if (!pointsByDriverByRound.has(driverId)) {
+        pointsByDriverByRound.set(driverId, {});
+      }
+      const byRound = pointsByDriverByRound.get(driverId);
+      byRound[race.round] = Number(byRound[race.round] || 0) + Number(r.points || 0);
 
       if (!driversById.has(driverId)) {
         driversById.set(driverId, r.Driver);
@@ -181,11 +207,11 @@ export default function ResultPage() {
 
       {viewMode === "global" && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-4 mt-4">
-          {loadingRaces || loadingSeasonResults || loadingStandings ? (
+          {loadingRaces || loadingSeasonResults || loadingSeasonSprints || loadingStandings ? (
             <p className="text-gray-600">Chargement de la vue globale...</p>
-          ) : errorRaces || errorSeasonResults || errorStandings ? (
+          ) : errorRaces || errorSeasonResults || errorSeasonSprints || errorStandings ? (
             <p className="text-red-500">
-              Erreur : {errorRaces || errorSeasonResults || errorStandings}
+              Erreur : {errorRaces || errorSeasonResults || errorSeasonSprints || errorStandings}
             </p>
           ) : driverIds.length === 0 ? (
             <p className="text-gray-600">

@@ -18,7 +18,7 @@ function Layout({ collapsed, setCollapsed }) {
       <Navbar collapsed={collapsed} setCollapsed={setCollapsed} />
 
       <main
-        className={`
+        className={`main-scrollbar
           h-screen
           overflow-y-auto
           ${isFullScreenPage ? 'p-0' : 'p-6'}
