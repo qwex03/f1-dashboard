@@ -37,11 +37,11 @@ export default function ResultPage() {
   const races = racesData?.MRData?.RaceTable?.Races ?? [];
   const results = resultsData?.MRData?.RaceTable?.Races?.[0]?.Results ?? [];
   const [seasonResultRaces, setSeasonResultRaces] = useState([]);
-  const [seasonSprintRaces, setSeasonSprintRaces] = useState([]);
+  const [seasonSprintRaces] = useState([]);
   const [loadingSeasonResults, setLoadingSeasonResults] = useState(false);
-  const [loadingSeasonSprints, setLoadingSeasonSprints] = useState(false);
+  const [loadingSeasonSprints] = useState(false);
   const [errorSeasonResults, setErrorSeasonResults] = useState(null);
-  const [errorSeasonSprints, setErrorSeasonSprints] = useState(null);
+  const [errorSeasonSprints] = useState(null);
   const standings =
     standingsData?.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings ?? [];
 
