@@ -10,6 +10,7 @@ import { useSeason } from "../context/SeasonContext";
 export default function ResultPage() {
   const [selectedRound, setSelectedRound] = useState(null);
   const [viewMode, setViewMode] = useState("global");
+  const [sessionView, setSessionView] = useState("course");
   const { season } = useSeason();
 
   const {
@@ -29,19 +30,31 @@ export default function ResultPage() {
   );
 
   const {
+    data: sprintData,
+    loading: loadingSprint,
+    error: errorSprint,
+  } = useFetch(
+    selectedRound
+      ? `https://api.jolpi.ca/ergast/f1/${season}/${selectedRound}/sprint.json`
+      : null
+  );
+
+  const {
     data: standingsData,
     loading: loadingStandings,
     error: errorStandings,
   } = useFetch(`https://api.jolpi.ca/ergast/f1/${season}/driverStandings.json`);
 
   const races = racesData?.MRData?.RaceTable?.Races ?? [];
+  const selectedRace = races.find((r) => r.round === selectedRound);
   const results = resultsData?.MRData?.RaceTable?.Races?.[0]?.Results ?? [];
+  const sprintResults = sprintData?.MRData?.RaceTable?.Races?.[0]?.SprintResults ?? [];
   const [seasonResultRaces, setSeasonResultRaces] = useState([]);
-  const [seasonSprintRaces] = useState([]);
+  const [seasonSprintRaces, setSeasonSprintRaces] = useState([]);
   const [loadingSeasonResults, setLoadingSeasonResults] = useState(false);
-  const [loadingSeasonSprints] = useState(false);
+  const [loadingSeasonSprints, setLoadingSeasonSprints] = useState(false);
   const [errorSeasonResults, setErrorSeasonResults] = useState(null);
-  const [errorSeasonSprints] = useState(null);
+  const [errorSeasonSprints, setErrorSeasonSprints] = useState(null);
   const standings =
     standingsData?.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings ?? [];
 
@@ -127,8 +140,29 @@ export default function ResultPage() {
       }
     }
 
-    
+    async function fetchAllSeasonSprints() {
+      setLoadingSeasonSprints(true);
+      setErrorSeasonSprints(null);
+
+      try {
+        const mergedRaces = await fetchPaginatedRaces("sprint", "SprintResults");
+        if (!cancelled) {
+          setSeasonSprintRaces(mergedRaces);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setErrorSeasonSprints(null);
+          setSeasonSprintRaces([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingSeasonSprints(false);
+        }
+      }
+    }
+
     fetchAllSeasonResults();
+    fetchAllSeasonSprints();
 
     return () => {
       cancelled = true;
@@ -188,6 +222,76 @@ export default function ResultPage() {
           );
           return totalB - totalA;
         });
+
+  const hasSprintWeekend = Boolean(selectedRace?.Sprint || sprintResults.length);
+
+  const renderResultsTable = (rows, emptyMessage) => (
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead>
+          <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700">
+            <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Pos</th>
+            <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Pilote</th>
+            <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Ecurie</th>
+            <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Temps</th>
+            <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Points</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+          {rows.length === 0 ? (
+            <tr>
+              <td
+                colSpan="5"
+                className="px-4 py-6 text-center text-gray-600 dark:text-gray-300 font-medium"
+              >
+                {emptyMessage}
+              </td>
+            </tr>
+          ) : (
+            rows.map((r, index) => (
+              <tr
+                key={`${r.Driver.driverId}-${r.position}-${index}`}
+                className="hover:bg-gray-50 hover:text-red-600 group dark:hover:bg-gray-750 transition-colors animate-fadeIn"
+                style={{ animationDelay: `${index * 0.03}s` }}
+              >
+                <td className="px-4 py-3 font-medium dark:text-white group-hover:text-red-600">
+                  {r.position}
+                </td>
+
+                <td className="px-4 py-3 font-medium flex items-center gap-2 dark:text-white group-hover:text-red-600">
+                  {getFlagImg(r.Driver.nationality) && (
+                    <img
+                      src={getFlagImg(r.Driver.nationality)}
+                      className="w-6 h-4"
+                      alt={r.Driver.nationality}
+                    />
+                  )}
+                  {r.Driver.givenName} {r.Driver.familyName}
+                </td>
+
+                <td className="px-4 py-3 dark:text-white group-hover:text-red-600">
+                  <div className="flex flex-row gap-2 items-center">
+                    <TeamImageWithFallback
+                      teamName={r.Constructor.name}
+                      className="w-6 h-auto"
+                    />
+                    <span>{r.Constructor.name}</span>
+                  </div>
+                </td>
+
+                <td className="px-4 py-3 dark:text-white group-hover:text-red-600">
+                  {r.Time?.time || r.status}
+                </td>
+                <td className="px-4 py-3 dark:text-white group-hover:text-red-600">
+                  {r.points}
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
 
   return (
     <div className="overflow-x-hidden">
@@ -308,6 +412,8 @@ export default function ResultPage() {
             rounds={races}
             selectedRound={selectedRound}
             setSelectedRound={setSelectedRound}
+            sessionView={sessionView}
+            setSessionView={setSessionView}
           />
         ))}
 
@@ -320,73 +426,27 @@ export default function ResultPage() {
           {!loadingResults && !errorResults && (
             <>
               <h2 className="text-2xl font-bold mb-4 dark:text-white">
-                Resultats du GP {races.find((r) => r.round === selectedRound)?.raceName} {season}
+                Resultats du GP {selectedRace?.raceName} {season}
               </h2>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700">
-                      <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Pos</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Pilote</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Ecurie</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Temps</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Points</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                    {results.length === 0 ? (
-                      <tr>
-                        <td
-                          colSpan="5"
-                          className="px-4 py-6 text-center text-gray-600 dark:text-gray-300 font-medium"
-                        >
-                          Le Grand Prix n'a pas encore eu lieu
-                        </td>
-                      </tr>
-                    ) : (
-                      results.map((r, index) => (
-                        <tr
-                          key={index}
-                          className="hover:bg-gray-50 hover:text-red-600 group dark:hover:bg-gray-750 transition-colors animate-fadeIn"
-                          style={{ animationDelay: `${index * 0.03}s` }}
-                        >
-                          <td className="px-4 py-3 font-medium dark:text-white group-hover:text-red-600">
-                            {r.position}
-                          </td>
 
-                          <td className="px-4 py-3 font-medium flex items-center gap-2 dark:text-white group-hover:text-red-600">
-                            {getFlagImg(r.Driver.nationality) && (
-                              <img
-                                src={getFlagImg(r.Driver.nationality)}
-                                className="w-6 h-4"
-                                alt={r.Driver.nationality}
-                              />
-                            )}
-                            {r.Driver.givenName} {r.Driver.familyName}
-                          </td>
-
-                          <td className="px-4 py-3 dark:text-white group-hover:text-red-600">
-                            <div className="flex flex-row gap-2 items-center">
-                              <TeamImageWithFallback
-                                teamName={r.Constructor.name}
-                                className="w-6 h-auto"
-                              />
-                              <span>{r.Constructor.name}</span>
-                            </div>
-                          </td>
-
-                          <td className="px-4 py-3 dark:text-white group-hover:text-red-600">
-                            {r.Time?.time || r.status}
-                          </td>
-                          <td className="px-4 py-3 dark:text-white group-hover:text-red-600">
-                            {r.points}
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
+              {sessionView === "sprint" && hasSprintWeekend ? (
+                loadingSprint ? (
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Chargement des resultats du sprint...
+                  </p>
+                ) : errorSprint ? (
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Les resultats du sprint ne sont pas encore disponibles.
+                  </p>
+                ) : (
+                  renderResultsTable(
+                    sprintResults,
+                    "Le sprint n'a pas encore eu lieu"
+                  )
+                )
+              ) : (
+                renderResultsTable(results, "Le Grand Prix n'a pas encore eu lieu")
+              )}
             </>
           )}
         </div>

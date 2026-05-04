@@ -1,7 +1,25 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import useFetch from "../hooks/useFetch";
 import { ChevronLeft, ChevronRight, Clock, Flag, Trophy } from "lucide-react";
-import { getFlagImg } from "../utils/flags"; 
+import { formatInTimeZone } from "date-fns-tz";
+import { getFlagImg } from "../utils/flags";
+
+const FRENCH_TIME_ZONE = "Europe/Paris";
+
+function getSessionDateTime(session) {
+  return new Date(`${session.date}T${session.time || "00:00:00Z"}`);
+}
+
+function formatFrenchDate(session) {
+  return formatInTimeZone(getSessionDateTime(session), FRENCH_TIME_ZONE, "dd/MM/yyyy");
+}
+
+function formatFrenchSession(session) {
+  if (!session) return "N/A";
+
+  const format = session.time ? "dd/MM/yyyy 'à' HH:mm" : "dd/MM/yyyy";
+  return formatInTimeZone(getSessionDateTime(session), FRENCH_TIME_ZONE, format);
+}
 
 export default function NextGPCarousel() {
   const { data, loading, error } = useFetch(
@@ -15,14 +33,14 @@ export default function NextGPCarousel() {
     if (data) {
       const races = data?.MRData?.RaceTable?.Races || [];
       const today = new Date();
-      const futureRaces = races.filter((race) => new Date(race.date) >= today);
+      const futureRaces = races.filter((race) => getSessionDateTime(race) >= today);
       setUpcomingRaces(futureRaces);
     }
   }, [data]);
 
   const scroll = (direction) => {
     if (carouselRef.current) {
-      const cardWidth = 320 + 24; 
+      const cardWidth = 320 + 24;
       carouselRef.current.scrollBy({
         left: direction === "left" ? -(cardWidth * 2) : cardWidth * 2,
         behavior: "smooth",
@@ -59,7 +77,7 @@ export default function NextGPCarousel() {
         className="flex overflow-x-auto scroll-smooth space-x-6 px-4 w-full hide-scrollbar scroll-snap-type-x-mandatory"
       >
         {upcomingRaces.map((race, index) => {
-          const isNext = index === 0; 
+          const isNext = index === 0;
           return (
             <div
               key={race.round}
@@ -85,32 +103,25 @@ export default function NextGPCarousel() {
                 {race.Circuit.Location.country}
               </p>
               <p className="text-sm mb-4">
-                <span className="font-semibold">Date :</span>{" "}
-                {new Date(race.date).toLocaleDateString()}
+                <span className="font-semibold">Date :</span> {formatFrenchDate(race)}
               </p>
               <div className="text-sm space-y-2">
                 <p className="flex items-center">
                   <Clock className="h-4 w-4 mr-2 flex-shrink-0" />
                   <span className="font-semibold">FP1 :</span>{" "}
-                  {race.FirstPractice
-                    ? `${new Date(race.FirstPractice.date).toLocaleDateString()} à ${race.FirstPractice.time?.slice(0, 5)}`
-                    : "N/A"}
+                  {formatFrenchSession(race.FirstPractice)}
                 </p>
                 {race.Sprint ? (
                   <>
                     <p className="flex items-center">
                       <Flag className="h-4 w-4 mr-2 flex-shrink-0" />
                       <span className="font-semibold">Qualif Sprint :</span>{" "}
-                      {race.Qualifying
-                        ? `${new Date(race.Qualifying.date).toLocaleDateString()} à ${race.Qualifying.time?.slice(0, 5)}`
-                        : "N/A"}
+                      {formatFrenchSession(race.Qualifying)}
                     </p>
                     <p className="flex items-center">
                       <Trophy className="h-4 w-4 mr-2 flex-shrink-0" />
                       <span className="font-semibold">Sprint :</span>{" "}
-                      {race.Sprint
-                        ? `${new Date(race.Sprint.date).toLocaleDateString()} à ${race.Sprint.time?.slice(0, 5)}`
-                        : "N/A"}
+                      {formatFrenchSession(race.Sprint)}
                     </p>
                   </>
                 ) : (
@@ -118,23 +129,19 @@ export default function NextGPCarousel() {
                     <p className="flex items-center">
                       <Clock className="h-4 w-4 mr-2 flex-shrink-0" />
                       <span className="font-semibold">FP2 :</span>{" "}
-                      {race.SecondPractice
-                        ? `${new Date(race.SecondPractice.date).toLocaleDateString()} à ${race.SecondPractice.time?.slice(0, 5)}`
-                        : "N/A"}
+                      {formatFrenchSession(race.SecondPractice)}
                     </p>
                     <p className="flex items-center">
                       <Flag className="h-4 w-4 mr-2 flex-shrink-0" />
                       <span className="font-semibold">Qualif :</span>{" "}
-                      {race.Qualifying
-                        ? `${new Date(race.Qualifying.date).toLocaleDateString()} à ${race.Qualifying.time?.slice(0, 5)}`
-                        : "N/A"}
+                      {formatFrenchSession(race.Qualifying)}
                     </p>
                   </>
                 )}
                 <p className="flex items-center">
                   <Flag className="h-4 w-4 mr-2 flex-shrink-0" />
                   <span className="font-semibold">Course :</span>{" "}
-                  {new Date(race.date).toLocaleDateString()} à {race.time?.slice(0, 5)}
+                  {formatFrenchSession(race)}
                 </p>
               </div>
             </div>
