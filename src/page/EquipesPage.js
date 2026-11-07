@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import useFetch from "../hooks/useFetch";
-import { getFlagImg } from "../utils/flags";
 import { useSeason } from "../context/SeasonContext";
-import TeamImageWithFallback from "../composant/TeamImageWithFallback";
 import PageHeader from "../composant/PageHeader";
 import ViewToggle from "../composant/ViewToggle";
+import { FlagImg, Loading, Notice, Position, TableCard, TeamName } from "../composant/RaceUI";
+import { teamColor } from "../utils/teams";
 import {
   LineChart,
   Line,
@@ -17,7 +17,7 @@ import {
 } from "recharts";
 
 function EquipesPage() {
-  const [view, setView] = useState("constructeurs");
+  const [view, setView] = useState("classement");
   const { season } = useSeason();
 
   const [evolutionData, setEvolutionData] = useState([]);
@@ -25,11 +25,11 @@ function EquipesPage() {
   const [evolutionTeamNames, setEvolutionTeamNames] = useState({});
 
 
-  const { data: constructorsData } = useFetch(
+  const { data: constructorsData, loading: loadingTeams, error: errorTeams } = useFetch(
     `https://api.jolpi.ca/ergast/f1/${season}/constructors/`
   );
 
-  const { data: standingsData  } = useFetch(
+  const { data: standingsData, loading: loadingStandings, error: errorStandings } = useFetch(
     `https://api.jolpi.ca/ergast/f1/${season}/constructorStandings/`
   );
 
@@ -152,136 +152,165 @@ function EquipesPage() {
     setEvolutionTeamNames({});
   }, [season]);
 
-  const lineColors = [
-    "#ef4444",
-    "#3b82f6",
-    "#22c55e",
-    "#f59e0b",
-    "#a855f7",
-    "#06b6d4",
-    "#e11d48",
-    "#14b8a6",
-    "#f97316",
-    "#84cc16",
-  ];
+  const loading = loadingTeams || loadingStandings;
+  const error = errorTeams || errorStandings;
+  const leader = Number(classement[0]?.points ?? 0);
 
-  
-  
+  const chartTheme = {
+    grid: "rgb(var(--line))",
+    axis: "rgb(var(--muted))",
+  };
 
   return (
-    <div>
-      <PageHeader title="Equipes et Classement" description="Infos equipes et constructeurs en temps reel" />
+    <div className="pb-16">
+      <PageHeader
+        kicker={`Saison ${season}`}
+        title="Équipes"
+        description="Le championnat constructeurs, les écuries engagées et l'évolution des points manche après manche."
+      />
 
       <ViewToggle
         views={[
-          { label: "Constructeurs engages", value: "constructeurs" },
-          { label: "Classement actuel", value: "classement" },
-          { label: "Evolution du classement", value: "evolution" },
+          { label: "Classement", value: "classement" },
+          { label: "Écuries engagées", value: "constructeurs" },
+          { label: "Évolution", value: "evolution" },
         ]}
         currentView={view}
         onViewChange={setView}
       />
 
-      {view !== "evolution" && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700">
-          <table className="w-full">
-            <thead>
-              {view === "constructeurs" ? (
-                <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">Nom de l'equipe</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">Nationalite</th>
-                </tr>
-              ) : (
-                <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">Position</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">Equipe</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">Points</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">Victoires</th>
-                </tr>
-              )}
-            </thead>
+      {loading ? (
+        <Loading rows={10} />
+      ) : error ? (
+        <Notice tone="error">Erreur : {error}</Notice>
+      ) : view === "constructeurs" ? (
+        <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {equipes.map((team, i) => (
+            <li
+              key={team.constructorId}
+              className="panel relative flex items-center gap-4 overflow-hidden p-4 animate-rise"
+              style={{ animationDelay: `${i * 40}ms` }}
+            >
+              <span className="absolute inset-y-0 left-0 w-1" style={{ backgroundColor: teamColor(team.constructorId) }} />
+              <div className="min-w-0 flex-1">
+                <TeamName constructor={team} />
+              </div>
+              <span className="flex items-center gap-2 text-sm text-muted">
+                <FlagImg nationality={team.nationality} />
+                {team.nationality}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : view === "classement" ? (
+        classement.length === 0 ? (
+          <Notice>La saison n'a pas encore commencé. Le classement apparaîtra après la première course.</Notice>
+        ) : (
+          <TableCard>
+            <div className="overflow-x-auto">
+              <table className="f1-table">
+                <thead>
+                  <tr>
+                    <th className="w-16">Pos</th>
+                    <th>Écurie</th>
+                    <th className="w-[35%] hidden md:table-cell" />
+                    <th className="hidden text-right sm:table-cell">Vict.</th>
+                    <th className="hidden text-right sm:table-cell">Écart</th>
+                    <th className="text-right">Points</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {classement.map((team) => {
+                    const pts = Number(team.points);
+                    return (
+                      <tr key={team.Constructor.constructorId}>
+                        <td>
+                          <Position value={team.position} />
+                        </td>
+                        <td>
+                          <TeamName constructor={team.Constructor} />
+                        </td>
+                        <td className="hidden md:table-cell">
+                          <div className="h-1.5 w-full overflow-hidden rounded-full bg-raised">
+                            <div
+                              className="h-full rounded-full"
+                              style={{
+                                width: `${leader ? (pts / leader) * 100 : 0}%`,
+                                backgroundColor: teamColor(team.Constructor.constructorId),
+                              }}
+                            />
+                          </div>
+                        </td>
+                        <td className="num hidden text-right text-muted sm:table-cell">{team.wins}</td>
+                        <td className="num hidden text-right text-muted sm:table-cell">{team.position === "1" ? "—" : `−${leader - pts}`}</td>
+                        <td className="num text-right text-lg font-bold text-ink">{team.points}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </TableCard>
+        )
+      ) : (
+        <div className="panel p-4 sm:p-5 md:p-6 animate-rise">
+          <div className="mb-6 flex items-end justify-between gap-4">
+            <div>
+              <p className="kicker mb-1">Points cumulés</p>
+              <h2 className="font-display text-2xl font-bold uppercase tracking-tight text-ink">
+                Évolution du championnat
+              </h2>
+            </div>
+            {maxRound > 0 && <span className="num shrink-0 whitespace-nowrap text-sm text-muted">{maxRound} manches</span>}
+          </div>
 
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {view === "constructeurs"
-                ? equipes.map((team, index) => (
-                    <tr
-                      key={team.constructorId}
-                      className="group hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors animate-fadeIn"
-                      style={{ animationDelay: `${index * 0.05}s` }}
-                    >
-                      <td className="px-6 py-4 group-hover:text-red-600 text-black dark:text-white font-medium">
-                        <div className="flex flex-row gap-2 items-center">
-                          <TeamImageWithFallback teamName={team.name} className="w-8 h-8 object-contain" />
-                          <span>{team.name}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 group-hover:text-red-600 text-gray-900 dark:text-gray-100 font-medium flex items-center gap-2">
-                        <div className="flex flex-row gap-2 items-center">
-                          {getFlagImg(team.nationality) && (
-                            <img src={getFlagImg(team.nationality)} alt={team.nationality} className="w-6 h-4 object-contain" />
-                          )}
-                          {team.nationality}
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                : classement.length === 0
-                  ? (
-                    <tr>
-                      <td colSpan="4" className="px-6 py-12 text-center">
-                        <p className="text-gray-600 dark:text-gray-400 text-lg">
-                          La saison n'a pas encore commence. Le classement sera disponible une fois que les courses auront debute.
-                        </p>
-                      </td>
-                    </tr>
-                    )
-                  : classement.map((team, index) => (
-                    <tr
-                      key={team.Constructor.constructorId}
-                      className="hover:bg-gray-50 group dark:hover:bg-gray-750 transition-colors animate-fadeIn"
-                      style={{ animationDelay: `${index * 0.05}s` }}
-                    >
-                      <td className="px-6 py-4 group-hover:text-red-600 text-gray-900 dark:text-gray-100 font-medium">{team.position}</td>
-                      <td className="px-6 py-4 group-hover:text-red-600 text-gray-900 dark:text-gray-100 font-medium">
-                        <div className="flex flex-row gap-2 items-center">
-                          <TeamImageWithFallback teamName={team.Constructor.name} className="w-8 h-8 object-contain" />
-                          <span>{team.Constructor.name}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 group-hover:text-red-600 text-gray-900 dark:text-gray-100 font-medium">{team.points}</td>
-                      <td className="px-6 py-4 group-hover:text-red-600 text-gray-900 dark:text-gray-100 font-medium">{team.wins}</td>
-                    </tr>
-                    ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {view === "evolution" && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Evolution du classement</h2>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">Evolution des points par equipe manche apres manche.</p>
-
-          {evolutionData.length === 0 || evolutionTeams.length === 0 ? (
-            <p className="mt-6 text-gray-600 dark:text-gray-400">Pas de donnees d'evolution disponibles pour cette saison.</p>
+          {maxRound === 0 ? (
+            <p className="py-10 text-center text-muted">Pas encore de données d'évolution pour cette saison.</p>
+          ) : evolutionData.length === 0 || evolutionTeams.length === 0 ? (
+            <Loading rows={4} label="Chargement de l'évolution" />
           ) : (
-            <div className="mt-6 h-80">
+            <div className="h-80 sm:h-[26rem]">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={evolutionData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="round" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  {evolutionTeams.map((teamId, index) => (
+                <LineChart data={evolutionData} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+                  <CartesianGrid stroke={chartTheme.grid} vertical={false} />
+                  <XAxis
+                    dataKey="round"
+                    stroke={chartTheme.axis}
+                    tickLine={false}
+                    axisLine={{ stroke: chartTheme.grid }}
+                    tick={{ fontFamily: "JetBrains Mono", fontSize: 12 }}
+                  />
+                  <YAxis
+                    stroke={chartTheme.axis}
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fontFamily: "JetBrains Mono", fontSize: 12 }}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: "rgb(var(--surface))",
+                      border: "1px solid rgb(var(--line))",
+                      borderRadius: 8,
+                      fontFamily: "JetBrains Mono",
+                      fontSize: 12,
+                    }}
+                    labelStyle={{ color: "rgb(var(--ink))", fontWeight: 700 }}
+                    itemSorter={(item) => -item.value}
+                  />
+                  <Legend
+                    iconType="plainline"
+                    wrapperStyle={{ fontFamily: "Titillium Web", fontSize: 12, paddingTop: 12 }}
+                  />
+                  {evolutionTeams.map((teamId) => (
                     <Line
                       key={teamId}
-                      type="linear"
+                      type="monotone"
                       dataKey={teamId}
                       name={evolutionTeamNames[teamId] ?? teamId}
-                      stroke={lineColors[index % lineColors.length]}
-                      strokeWidth={2}
+                      stroke={teamColor(teamId)}
+                      strokeWidth={2.5}
                       dot={false}
+                      activeDot={{ r: 4 }}
                     />
                   ))}
                 </LineChart>
@@ -290,23 +319,6 @@ function EquipesPage() {
           )}
         </div>
       )}
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.4s ease-out forwards;
-          opacity: 0;
-        }
-      `}</style>
     </div>
   );
 }

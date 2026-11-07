@@ -1,21 +1,32 @@
-import React from 'react';
+import React from "react";
 
 export default function ViewToggle({ views, currentView, onViewChange }) {
   return (
-    <div className="flex gap-2 bg-gray-100 dark:bg-gray-900 p-1 rounded-xl w-fit shadow mb-4">
-      {views.map((view) => (
-        <button
-          key={view.value}
-          onClick={() => onViewChange(view.value)}
-          className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-            currentView === view.value
-              ? "bg-red-600 dark:bg-gray-700 shadow text-white"
-              : "text-gray-600 dark:text-gray-400"
-          }`}
-        >
-          {view.label}
-        </button>
-      ))}
+    <div
+      role="tablist"
+      className="mb-5 flex w-full gap-5 overflow-x-auto sm:mb-6 sm:gap-6 border-b border-line hide-scrollbar"
+    >
+      {views.map((view) => {
+        const active = currentView === view.value;
+        return (
+          <button
+            key={view.value}
+            role="tab"
+            aria-selected={active}
+            onClick={() => onViewChange(view.value)}
+            className={`relative -mb-px whitespace-nowrap pb-3 pt-1 font-display text-base font-semibold uppercase sm:text-lg tracking-wide transition-colors ${
+              active ? "text-ink" : "text-muted hover:text-ink"
+            }`}
+          >
+            {view.label}
+            <span
+              className={`absolute inset-x-0 bottom-0 h-[3px] bg-accent transition-transform origin-left ${
+                active ? "scale-x-100" : "scale-x-0"
+              }`}
+            />
+          </button>
+        );
+      })}
     </div>
   );
 }

@@ -70,6 +70,20 @@ function getUpcomingGPs() {
 
 function CalendrierPage() {
   const globeRef = useRef();
+  const wrapRef = useRef(null);
+  const [size, setSize] = useState({ width: 0, height: 0 });
+
+  // Size the globe to its container (sidebar on desktop, bars on mobile)
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return undefined;
+    const ro = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      setSize({ width, height });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   const [selectedGP, setSelectedGP] = useState(null);
   const upcomingGPs = getUpcomingGPs();
 
@@ -140,9 +154,11 @@ function CalendrierPage() {
   }, []);
 
   return (
-    <div className="relative h-screen w-full overflow-hidden">
+    <div ref={wrapRef} className="relative h-[calc(100dvh-7.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] w-full overflow-hidden md:h-screen">
       <Globe
         ref={globeRef}
+        width={size.width || undefined}
+        height={size.height || undefined}
         globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
         bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
         backgroundColor="#000000"
@@ -150,68 +166,98 @@ function CalendrierPage() {
         pointsData={gpData}
         pointLat="lat"
         pointLng="lng"
-        pointColor={() => "red"}
+        pointColor={(p) => (selectedGP?.gp === p.gp ? "#ffffff" : "#ff1e16")}
+        atmosphereColor="#ff6a5c"
+        atmosphereAltitude={0.18}
         pointAltitude={0.02}
-        pointRadius={0.8}
+        pointRadius={0.7}
+        pointLabel={(p) => p.gp}
         onPointClick={(point) => focusGP(point)}
       />
 
+      {/* Title overlay */}
+      <div className="pointer-events-none absolute left-4 top-4 z-10 md:left-10 md:top-10">
+        <p className="mb-2 flex items-center gap-2 font-display text-sm font-semibold uppercase tracking-[0.2em] text-[#ff1e16]">
+          <span className="inline-block h-[3px] w-6 bg-[#ff1e16]" />
+          Saison {upcomingGPs[0]?.dateRange.start.getFullYear() ?? ""}
+        </p>
+        <h1 className="font-display text-4xl font-extrabold italic uppercase leading-[0.9] tracking-tight text-white md:text-7xl">
+          Calendrier
+          <span className="block text-white/40">autour du monde</span>
+        </h1>
+        <p className="mt-3 hidden max-w-xs text-sm text-white/60 sm:block">
+          Tournez le globe et cliquez sur un circuit pour le découvrir.
+        </p>
+      </div>
+
       {selectedGP && (
-        <div className="absolute top-1/2 left-1/2 z-20 w-80 max-w-[90%] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/30 bg-white/10 p-6 text-white shadow-2xl backdrop-blur-md animate-fadeIn">
-          <h2 className="mb-2 text-2xl font-extrabold">{selectedGP.gp}</h2>
-          <p className="mb-1 text-sm">
-            <span className="font-semibold">Circuit:</span> {selectedGP.circuit}
-          </p>
-          <p className="mb-1 text-sm">
-            <span className="font-semibold">Ville:</span> {selectedGP.city}
-          </p>
-          <p className="mb-4 text-sm">
-            <span className="font-semibold">Date:</span> {selectedGP.date}
-          </p>
-          <button
-            onClick={() => setSelectedGP(null)}
-            className="w-full rounded-xl bg-red-600 py-2 font-semibold shadow-md transition-colors duration-200 hover:bg-red-500"
-          >
-            Fermer
-          </button>
+        <div className="absolute inset-x-4 top-4 z-20 sm:inset-x-auto sm:right-6 sm:w-80 overflow-hidden rounded-xl border border-white/15 bg-black/70 text-white shadow-2xl backdrop-blur-md animate-rise md:right-10 md:top-10">
+          <div className="h-1 bg-[#ff1e16]" />
+          <div className="p-5">
+            <p className="font-display text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+              {selectedGP.city}
+            </p>
+            <h2 className="mt-1 font-display text-3xl font-extrabold uppercase leading-none tracking-tight">
+              {selectedGP.gp.replace("Grand Prix", "GP")}
+            </h2>
+            <dl className="mt-4 space-y-2 text-sm">
+              <div className="flex justify-between gap-4 border-t border-white/10 pt-2">
+                <dt className="text-white/55">Circuit</dt>
+                <dd className="text-right">{selectedGP.circuit}</dd>
+              </div>
+              <div className="flex justify-between gap-4 border-t border-white/10 pt-2">
+                <dt className="text-white/55">Dates</dt>
+                <dd className="font-mono text-right">{selectedGP.date}</dd>
+              </div>
+            </dl>
+            <button
+              onClick={() => setSelectedGP(null)}
+              className="mt-5 h-10 w-full rounded-lg border border-white/20 font-semibold text-white transition-colors hover:bg-white hover:text-black"
+            >
+              Fermer
+            </button>
+          </div>
         </div>
       )}
 
-      <div className="absolute bottom-0 left-0 right-0 z-10 border-t border-white/20 bg-black/70 px-4 py-4 text-white backdrop-blur-md">
+      <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black via-black/85 to-transparent px-4 pb-4 pt-16 text-white md:px-10 md:pb-6">
         <div className="mb-3 flex items-center justify-between gap-4">
-          <h2 className="text-lg font-bold">Prochains Grands Prix</h2>
-          {selectedGP && (
-            <p className="hidden text-sm text-white/70 sm:block">
-              Position : {selectedGP.gp}
-            </p>
-          )}
+          <h2 className="font-display text-sm font-semibold uppercase tracking-[0.2em] text-white/70">
+            Prochains Grands Prix
+          </h2>
+          <span className="font-mono text-xs text-white/50">{upcomingGPs.length} à venir</span>
         </div>
 
-        <div className="flex gap-3 overflow-x-auto pb-1">
+        <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar">
           {upcomingGPs.length === 0 && (
-            <p className="text-sm text-white/70">
-              Aucun Grand Prix a venir dans le calendrier.
-            </p>
+            <p className="text-sm text-white/70">Aucun Grand Prix à venir dans le calendrier.</p>
           )}
 
-          {upcomingGPs.map((gp) => {
+          {upcomingGPs.map((gp, i) => {
             const isSelected = selectedGP?.gp === gp.gp;
 
             return (
               <button
                 key={gp.gp}
                 onClick={() => focusGP(gp)}
-                className={`min-w-64 rounded-lg border px-4 py-3 text-left transition ${
+                className={`w-52 shrink-0 sm:w-60 rounded-xl border px-4 py-3 text-left transition-colors ${
                   isSelected
-                    ? "border-red-400 bg-red-600 text-white shadow-lg"
-                    : "border-white/20 bg-white/10 text-white hover:border-red-400 hover:bg-white/20"
+                    ? "border-[#ff1e16] bg-[#ff1e16] text-white"
+                    : "border-white/15 bg-white/[0.06] text-white hover:border-white/40"
                 }`}
               >
-                <span className="block truncate text-sm font-bold">{gp.gp}</span>
-                <span className="mt-1 block truncate text-xs opacity-80">
-                  {gp.circuit}
+                <span className="flex items-center justify-between gap-2 font-mono text-[11px] text-white/60">
+                  <span className="truncate">{gp.date}</span>
+                  {i === 0 && !isSelected && (
+                    <span className="shrink-0 text-[#ff1e16]">
+                      ●<span className="hidden sm:inline"> Prochain</span>
+                    </span>
+                  )}
                 </span>
-                <span className="mt-2 block text-xs font-semibold">{gp.date}</span>
+                <span className="mt-1 block truncate font-display text-lg font-bold uppercase leading-tight tracking-tight">
+                  {gp.gp.replace("Grand Prix", "GP")}
+                </span>
+                <span className="block truncate text-xs text-white/60">{gp.circuit}</span>
               </button>
             );
           })}

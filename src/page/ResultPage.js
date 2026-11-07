@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import useFetch from "../hooks/useFetch";
-import { getFlagImg } from "../utils/flags";
 import GPCarousel from "../composant/GPCarousel";
-import TeamImageWithFallback from "../composant/TeamImageWithFallback";
 import PageHeader from "../composant/PageHeader";
 import ViewToggle from "../composant/ViewToggle";
 import { useSeason } from "../context/SeasonContext";
+import { DriverName, Loading, Notice, Position, TableCard, TeamName } from "../composant/RaceUI";
 
 export default function ResultPage() {
   const [selectedRound, setSelectedRound] = useState(null);
@@ -225,172 +224,146 @@ export default function ResultPage() {
 
   const hasSprintWeekend = Boolean(selectedRace?.Sprint || sprintResults.length);
 
-  const renderResultsTable = (rows, emptyMessage) => (
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead>
-          <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700">
-            <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Pos</th>
-            <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Pilote</th>
-            <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Ecurie</th>
-            <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Temps</th>
-            <th className="px-4 py-3 text-left text-sm font-semibold dark:text-white">Points</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-          {rows.length === 0 ? (
-            <tr>
-              <td
-                colSpan="5"
-                className="px-4 py-6 text-center text-gray-600 dark:text-gray-300 font-medium"
-              >
-                {emptyMessage}
-              </td>
-            </tr>
-          ) : (
-            rows.map((r, index) => (
-              <tr
-                key={`${r.Driver.driverId}-${r.position}-${index}`}
-                className="hover:bg-gray-50 hover:text-red-600 group dark:hover:bg-gray-750 transition-colors animate-fadeIn"
-                style={{ animationDelay: `${index * 0.03}s` }}
-              >
-                <td className="px-4 py-3 font-medium dark:text-white group-hover:text-red-600">
-                  {r.position}
-                </td>
-
-                <td className="px-4 py-3 font-medium flex items-center gap-2 dark:text-white group-hover:text-red-600">
-                  {getFlagImg(r.Driver.nationality) && (
-                    <img
-                      src={getFlagImg(r.Driver.nationality)}
-                      className="w-6 h-4"
-                      alt={r.Driver.nationality}
-                    />
-                  )}
-                  {r.Driver.givenName} {r.Driver.familyName}
-                </td>
-
-                <td className="px-4 py-3 dark:text-white group-hover:text-red-600">
-                  <div className="flex flex-row gap-2 items-center">
-                    <TeamImageWithFallback
-                      teamName={r.Constructor.name}
-                      className="w-6 h-auto"
-                    />
-                    <span>{r.Constructor.name}</span>
-                  </div>
-                </td>
-
-                <td className="px-4 py-3 dark:text-white group-hover:text-red-600">
-                  {r.Time?.time || r.status}
-                </td>
-                <td className="px-4 py-3 dark:text-white group-hover:text-red-600">
-                  {r.points}
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
-    </div>
+  const constructorByDriver = new Map(
+    standings.map((s) => [s.Driver.driverId, s.Constructors?.[0]])
   );
 
+  const pointsClass = (p) => {
+    // Heat scale: the more points scored that weekend, the hotter the cell
+    if (p >= 25) return "bg-accent text-accent-ink font-bold";
+    if (p >= 15) return "bg-accent/30 text-ink font-bold";
+    if (p >= 8) return "bg-accent/10 text-ink";
+    if (p > 0) return "text-ink";
+    return "text-faint";
+  };
+
+  const renderResultsTable = (rows, emptyMessage) =>
+    rows.length === 0 ? (
+      <Notice>{emptyMessage}</Notice>
+    ) : (
+      <TableCard>
+        <div className="overflow-x-auto">
+          <table className="f1-table">
+            <thead>
+              <tr>
+                <th className="w-16">Pos</th>
+                <th>Pilote</th>
+                <th className="hidden md:table-cell">Écurie</th>
+                <th className="text-right">Temps</th>
+                <th className="text-right">Pts</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r, index) => {
+                const finished = Boolean(r.Time?.time);
+                return (
+                  <tr key={`${r.Driver.driverId}-${r.position}-${index}`}>
+                    <td>
+                      <Position value={r.position} />
+                    </td>
+                    <td>
+                      <DriverName driver={r.Driver} constructor={r.Constructor} />
+                    </td>
+                    <td className="hidden md:table-cell">
+                      <TeamName constructor={r.Constructor} />
+                    </td>
+                    <td className={`num text-right ${finished ? (index === 0 ? "text-ink font-bold" : "text-muted") : "text-faint"}`}>
+                      {r.Time?.time || r.status}
+                    </td>
+                    <td className="num text-right font-bold text-ink">
+                      {Number(r.points) > 0 ? `+${r.points}` : <span className="text-faint">0</span>}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </TableCard>
+    );
+
+  const globalLoading = loadingRaces || loadingSeasonResults || loadingSeasonSprints || loadingStandings;
+  const globalError = errorRaces || errorSeasonResults || errorSeasonSprints || errorStandings;
+  const winner = results[0];
+
   return (
-    <div className="overflow-x-hidden">
+    <div className="pb-16">
       <PageHeader
-        title={`Resultats des Grands Prix ${season}`}
-        description="Cliquez sur un Grand Prix pour afficher le classement complet"
+        kicker={`Saison ${season}`}
+        title="Résultats"
+        description="Les points marqués à chaque Grand Prix, ou le classement complet d'une course."
       />
 
       <ViewToggle
         views={[
-          { label: "Vue globale", value: "global" },
-          { label: "Vue par GP", value: "gp" },
+          { label: "Grille de la saison", value: "global" },
+          { label: "Par Grand Prix", value: "gp" },
         ]}
         currentView={viewMode}
         onViewChange={setViewMode}
       />
 
-      {viewMode === "global" && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-4 mt-4">
-          {loadingRaces || loadingSeasonResults || loadingSeasonSprints || loadingStandings ? (
-            <p className="text-gray-600">Chargement de la vue globale...</p>
-          ) : errorRaces || errorSeasonResults || errorSeasonSprints || errorStandings ? (
-            <p className="text-red-500">
-              Erreur : {errorRaces || errorSeasonResults || errorSeasonSprints || errorStandings}
-            </p>
-          ) : driverIds.length === 0 ? (
-            <p className="text-gray-600">
-              La saison n'a pas encore commence. Les points apparaitront apres les premieres courses.
-            </p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+      {viewMode === "global" &&
+        (globalLoading ? (
+          <Loading rows={12} label="Chargement de la vue globale" />
+        ) : globalError ? (
+          <Notice tone="error">Erreur : {globalError}</Notice>
+        ) : driverIds.length === 0 ? (
+          <Notice>La saison n'a pas encore commencé. Les points apparaîtront après les premières courses.</Notice>
+        ) : (
+          <TableCard>
+            <div className="overflow-x-auto main-scrollbar">
+              <table className="f1-table text-sm">
                 <thead>
-                  <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700">
-                    <th className="sticky left-0 z-10 bg-gray-50 dark:bg-gray-900 px-4 py-3 text-left font-semibold dark:text-white min-w-56">
-                      Pilote
-                    </th>
+                  <tr>
+                    <th className="sticky left-0 z-10 min-w-[8.5rem] sm:min-w-[15rem]">Pilote</th>
                     {races.map((race) => (
-                      <th
-                        key={race.round}
-                        className="px-3 py-3 text-center font-semibold dark:text-white min-w-28"
-                        title={race.raceName}
-                      >
-                        {race.raceName.replace("Grand Prix", "GP")}
+                      <th key={race.round} className="min-w-[3.5rem] !px-1 text-center" title={race.raceName}>
+                        <span className="block text-faint">R{race.round}</span>
+                        <span className="block text-ink">
+                          {race.Circuit?.Location?.country?.slice(0, 3).toUpperCase()}
+                        </span>
                       </th>
                     ))}
-                    <th className="px-4 py-3 text-center font-semibold dark:text-white min-w-20">
-                      Total
-                    </th>
+                    <th className="sticky right-0 z-10 min-w-[4.5rem] text-right">Total</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody>
                   {driverIds.map((driverId, rowIndex) => {
                     const driver =
                       driversById.get(driverId) ||
                       standings.find((s) => s.Driver.driverId === driverId)?.Driver;
                     const byRound = pointsByDriverByRound.get(driverId) || {};
-                    const totalPoints = races.reduce(
-                      (sum, race) => sum + Number(byRound[race.round] || 0),
-                      0
-                    );
+                    const total = races.reduce((sum, race) => sum + Number(byRound[race.round] || 0), 0);
 
                     return (
-                      <tr
-                        key={driverId}
-                        className="hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
-                      >
-                        <td className="sticky left-0 z-10 bg-white dark:bg-gray-800 px-4 py-3 font-medium dark:text-white">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-500 dark:text-gray-400 w-6">
-                              {rowIndex + 1}
-                            </span>
-                            {driver?.nationality && getFlagImg(driver.nationality) ? (
-                              <img
-                                src={getFlagImg(driver.nationality)}
-                                className="w-6 h-4"
-                                alt={driver.nationality}
-                              />
-                            ) : null}
-                            <span>
-                              {driver?.givenName} {driver?.familyName}
-                            </span>
-                          </div>
+                      <tr key={driverId}>
+                        <td className="sticky left-0 z-10 bg-surface">
+                          <span className="flex items-center gap-2">
+                            <span className="num w-6 text-right text-xs text-faint">{rowIndex + 1}</span>
+                            <DriverName
+                              driver={driver}
+                              constructor={constructorByDriver.get(driverId) ?? null}
+                              showFlag={false}
+                            />
+                          </span>
                         </td>
-
                         {races.map((race) => {
                           const pts = byRound[race.round];
                           return (
-                            <td
-                              key={`${driverId}-${race.round}`}
-                              className="px-3 py-3 text-center dark:text-white"
-                            >
-                              {typeof pts === "number" ? pts : "-"}
+                            <td key={`${driverId}-${race.round}`} className="!px-1 text-center">
+                              {typeof pts === "number" ? (
+                                <span className={`num inline-block min-w-[2.25rem] rounded px-1 py-1 ${pointsClass(pts)}`}>
+                                  {pts}
+                                </span>
+                              ) : (
+                                <span className="text-faint">·</span>
+                              )}
                             </td>
                           );
                         })}
-
-                        <td className="px-4 py-3 text-center font-bold dark:text-white">
-                          {totalPoints}
+                        <td className="num sticky right-0 z-10 bg-surface text-right text-base font-bold text-ink">
+                          {total}
                         </td>
                       </tr>
                     );
@@ -398,15 +371,14 @@ export default function ResultPage() {
                 </tbody>
               </table>
             </div>
-          )}
-        </div>
-      )}
+          </TableCard>
+        ))}
 
       {viewMode === "gp" &&
         (loadingRaces ? (
-          <p className="text-gray-600">Chargement des Grands Prix...</p>
+          <Loading rows={2} />
         ) : errorRaces ? (
-          <p className="text-red-500">Erreur : {errorRaces}</p>
+          <Notice tone="error">Erreur : {errorRaces}</Notice>
         ) : (
           <GPCarousel
             rounds={races}
@@ -418,56 +390,43 @@ export default function ResultPage() {
         ))}
 
       {viewMode === "gp" && selectedRound && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-4 mt-4">
-          {loadingResults && <p className="text-gray-600">Chargement des resultats...</p>}
-
-          {errorResults && <p className="text-red-500">Erreur : {errorResults}</p>}
-
-          {!loadingResults && !errorResults && (
-            <>
-              <h2 className="text-2xl font-bold mb-4 dark:text-white">
-                Resultats du GP {selectedRace?.raceName} {season}
+        <section className="mt-6 sm:mt-8">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="kicker mb-1">
+                Manche {selectedRound} · {sessionView === "sprint" ? "Sprint" : "Course"}
+              </p>
+              <h2 className="font-display text-2xl font-bold uppercase tracking-tight text-ink sm:text-3xl md:text-4xl">
+                {selectedRace?.raceName}
               </h2>
+            </div>
+            {sessionView !== "sprint" && winner && (
+              <p className="text-sm text-muted">
+                Vainqueur ·{" "}
+                <span className="font-display text-lg font-bold uppercase text-ink">
+                  {winner.Driver.familyName}
+                </span>
+              </p>
+            )}
+          </div>
 
-              {sessionView === "sprint" && hasSprintWeekend ? (
-                loadingSprint ? (
-                  <p className="text-gray-600 dark:text-gray-300">
-                    Chargement des resultats du sprint...
-                  </p>
-                ) : errorSprint ? (
-                  <p className="text-gray-600 dark:text-gray-300">
-                    Les resultats du sprint ne sont pas encore disponibles.
-                  </p>
-                ) : (
-                  renderResultsTable(
-                    sprintResults,
-                    "Le sprint n'a pas encore eu lieu"
-                  )
-                )
-              ) : (
-                renderResultsTable(results, "Le Grand Prix n'a pas encore eu lieu")
-              )}
-            </>
+          {loadingResults ? (
+            <Loading rows={10} />
+          ) : errorResults ? (
+            <Notice tone="error">Erreur : {errorResults}</Notice>
+          ) : sessionView === "sprint" && hasSprintWeekend ? (
+            loadingSprint ? (
+              <Loading rows={8} />
+            ) : errorSprint ? (
+              <Notice>Les résultats du sprint ne sont pas encore disponibles.</Notice>
+            ) : (
+              renderResultsTable(sprintResults, "Le sprint n'a pas encore eu lieu.")
+            )
+          ) : (
+            renderResultsTable(results, "Ce Grand Prix n'a pas encore eu lieu.")
           )}
-        </div>
+        </section>
       )}
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.3s ease-out forwards;
-          opacity: 0;
-        }
-      `}</style>
     </div>
   );
 }
