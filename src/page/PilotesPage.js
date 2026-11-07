@@ -24,7 +24,7 @@ function DriversTable({ pilotes }) {
             <tr>
               <th className="w-16">N°</th>
               <th>Pilote</th>
-              <th>Nationalité</th>
+              <th className="hidden sm:table-cell">Nationalité</th>
               <th className="text-right">Naissance</th>
             </tr>
           </thead>
@@ -36,7 +36,7 @@ function DriversTable({ pilotes }) {
                   <DriverName driver={p} showFlag={false} />
                   {p.code && <span className="num ml-2 text-xs text-faint">{p.code}</span>}
                 </td>
-                <td>
+                <td className="hidden sm:table-cell">
                   <span className="flex items-center gap-2 text-muted">
                     <FlagImg nationality={p.nationality} />
                     {p.nationality}
@@ -44,7 +44,7 @@ function DriversTable({ pilotes }) {
                 </td>
                 <td className="num text-right text-muted">
                   {p.dateOfBirth ? new Date(p.dateOfBirth).toLocaleDateString("fr-FR") : "—"}
-                  {age(p.dateOfBirth) != null && <span className="ml-2 text-faint">({age(p.dateOfBirth)} ans)</span>}
+                  {age(p.dateOfBirth) != null && <span className="ml-2 hidden text-faint sm:inline">({age(p.dateOfBirth)} ans)</span>}
                 </td>
               </tr>
             ))}
@@ -67,8 +67,8 @@ function StandingsTable({ standings }) {
               <th>Pilote</th>
               <th className="hidden md:table-cell">Écurie</th>
               <th className="w-[28%] hidden lg:table-cell" />
-              <th className="text-right">Vict.</th>
-              <th className="text-right">Écart</th>
+              <th className="hidden text-right sm:table-cell">Vict.</th>
+              <th className="hidden text-right sm:table-cell">Écart</th>
               <th className="text-right">Points</th>
             </tr>
           </thead>
@@ -96,8 +96,8 @@ function StandingsTable({ standings }) {
                       />
                     </div>
                   </td>
-                  <td className="num text-right text-muted">{s.wins}</td>
-                  <td className="num text-right text-muted">{s.position === "1" ? "—" : `−${leader - pts}`}</td>
+                  <td className="num hidden text-right text-muted sm:table-cell">{s.wins}</td>
+                  <td className="num hidden text-right text-muted sm:table-cell">{s.position === "1" ? "—" : `−${leader - pts}`}</td>
                   <td className="num text-right text-lg font-bold text-ink">{s.points}</td>
                 </tr>
               );

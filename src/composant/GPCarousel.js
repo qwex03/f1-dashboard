@@ -50,7 +50,7 @@ export default function GPCarousel({
         </div>
       </div>
 
-      <div ref={stripRef} className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar snap-x">
+      <div ref={stripRef} className="-mx-4 flex snap-x scroll-px-4 gap-2 overflow-x-auto px-4 pb-2 hide-scrollbar sm:mx-0 sm:px-0">
         {rounds.map((round) => {
           const isSelected = selectedRound === round.round;
           const isFuture = raceTime(round) > now;
@@ -61,7 +61,7 @@ export default function GPCarousel({
             <div
               key={round.round}
               data-round={round.round}
-              className={`snap-start w-44 shrink-0 rounded-xl border p-3 transition-colors ${
+              className={`snap-start w-36 shrink-0 sm:w-44 rounded-xl border p-3 transition-colors ${
                 isSelected
                   ? "border-accent bg-accent text-accent-ink"
                   : "border-line bg-surface text-ink hover:border-ink/30"

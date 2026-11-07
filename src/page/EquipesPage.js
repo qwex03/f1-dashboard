@@ -214,8 +214,8 @@ function EquipesPage() {
                     <th className="w-16">Pos</th>
                     <th>Écurie</th>
                     <th className="w-[35%] hidden md:table-cell" />
-                    <th className="text-right">Vict.</th>
-                    <th className="text-right">Écart</th>
+                    <th className="hidden text-right sm:table-cell">Vict.</th>
+                    <th className="hidden text-right sm:table-cell">Écart</th>
                     <th className="text-right">Points</th>
                   </tr>
                 </thead>
@@ -241,8 +241,8 @@ function EquipesPage() {
                             />
                           </div>
                         </td>
-                        <td className="num text-right text-muted">{team.wins}</td>
-                        <td className="num text-right text-muted">{team.position === "1" ? "—" : `−${leader - pts}`}</td>
+                        <td className="num hidden text-right text-muted sm:table-cell">{team.wins}</td>
+                        <td className="num hidden text-right text-muted sm:table-cell">{team.position === "1" ? "—" : `−${leader - pts}`}</td>
                         <td className="num text-right text-lg font-bold text-ink">{team.points}</td>
                       </tr>
                     );
@@ -253,7 +253,7 @@ function EquipesPage() {
           </TableCard>
         )
       ) : (
-        <div className="panel p-5 md:p-6 animate-rise">
+        <div className="panel p-4 sm:p-5 md:p-6 animate-rise">
           <div className="mb-6 flex items-end justify-between gap-4">
             <div>
               <p className="kicker mb-1">Points cumulés</p>
@@ -261,7 +261,7 @@ function EquipesPage() {
                 Évolution du championnat
               </h2>
             </div>
-            {maxRound > 0 && <span className="num text-sm text-muted">{maxRound} manches</span>}
+            {maxRound > 0 && <span className="num shrink-0 whitespace-nowrap text-sm text-muted">{maxRound} manches</span>}
           </div>
 
           {maxRound === 0 ? (
@@ -269,9 +269,9 @@ function EquipesPage() {
           ) : evolutionData.length === 0 || evolutionTeams.length === 0 ? (
             <Loading rows={4} label="Chargement de l'évolution" />
           ) : (
-            <div className="h-[26rem]">
+            <div className="h-80 sm:h-[26rem]">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={evolutionData} margin={{ top: 8, right: 16, left: -8, bottom: 0 }}>
+                <LineChart data={evolutionData} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
                   <CartesianGrid stroke={chartTheme.grid} vertical={false} />
                   <XAxis
                     dataKey="round"
@@ -299,7 +299,7 @@ function EquipesPage() {
                   />
                   <Legend
                     iconType="plainline"
-                    wrapperStyle={{ fontFamily: "Titillium Web", fontSize: 13, paddingTop: 12 }}
+                    wrapperStyle={{ fontFamily: "Titillium Web", fontSize: 12, paddingTop: 12 }}
                   />
                   {evolutionTeams.map((teamId) => (
                     <Line

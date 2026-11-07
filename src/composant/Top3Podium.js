@@ -18,7 +18,7 @@ function PodiumCard({ standing, leaderPoints }) {
 
   return (
     <article
-      className={`group relative overflow-hidden rounded-xl border border-line bg-surface ${ORDER[position]} ${
+      className={`group relative w-[78%] shrink-0 snap-center overflow-hidden rounded-xl border border-line bg-surface md:w-auto ${ORDER[position]} ${
         isFirst ? "md:-mt-6" : ""
       } animate-rise`}
       style={{ animationDelay: `${Number(position) * 80}ms` }}
@@ -33,7 +33,7 @@ function PodiumCard({ standing, leaderPoints }) {
       {/* giant position numeral */}
       <span
         aria-hidden
-        className="pointer-events-none absolute -right-2 -top-6 font-display text-[11rem] font-extrabold italic leading-none text-ink/[0.06]"
+        className="pointer-events-none absolute -right-2 -top-4 font-display text-[8rem] md:-top-6 md:text-[11rem] font-extrabold italic leading-none text-ink/[0.06]"
       >
         {position}
       </span>
@@ -48,7 +48,7 @@ function PodiumCard({ standing, leaderPoints }) {
           <span className="kicker text-[0.7rem]">{team?.name}</span>
         </div>
 
-        <div className={`relative mx-auto mt-4 ${isFirst ? "h-44 w-44" : "h-36 w-36"}`}>
+        <div className={`relative mx-auto mt-4 ${isFirst ? "h-32 w-32 md:h-44 md:w-44" : "h-28 w-28 md:h-36 md:w-36"}`}>
           <div className="absolute inset-0 rounded-full" style={{ backgroundColor: `${color}33` }} />
           <DriverImageWithFallback
             driverName={driver.givenName}
@@ -93,7 +93,7 @@ export default function Top3Podium({ top3 = [], displayedSeason, fallbackMessage
       <div className="mb-5 flex items-end justify-between gap-4">
         <div>
           <p className="kicker mb-1">Championnat pilotes {seasonToDisplay}</p>
-          <h2 className="font-display text-3xl font-bold uppercase tracking-tight text-ink">Le top 3</h2>
+          <h2 className="font-display text-2xl font-bold uppercase tracking-tight text-ink sm:text-3xl">Le top 3</h2>
         </div>
         <Link to="/drivers" className="group inline-flex items-center gap-2 text-sm font-semibold text-ink hover:text-accent">
           Classement complet
@@ -106,7 +106,7 @@ export default function Top3Podium({ top3 = [], displayedSeason, fallbackMessage
           {fallbackMessage ?? "Le podium sera disponible après le premier Grand Prix."}
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-3 md:items-end md:pt-6">
+        <div className="-mx-4 flex snap-x scroll-px-4 gap-3 overflow-x-auto px-4 pb-2 hide-scrollbar md:mx-0 md:grid md:grid-cols-3 md:items-end md:gap-4 md:overflow-visible md:px-0 md:pb-0 md:pt-6">
           {top3.map((s) => (
             <PodiumCard key={s.Driver.driverId} standing={s} leaderPoints={top3[0].points} />
           ))}
