@@ -2,25 +2,163 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* ------------------------------------------------------------------
+   Apex F1 — "pit wall" design tokens
+   Light = paper timing sheet, Dark = carbon pit-wall screen.
+   Values are RGB triplets so Tailwind opacity modifiers work.
+------------------------------------------------------------------- */
+@layer base {
+  :root {
+    --canvas: 243 242 238;
+    --surface: 255 255 255;
+    --raised: 236 235 230;
+    --line: 220 218 211;
+    --ink: 20 20 24;
+    --muted: 102 102 112;
+    --faint: 150 150 158;
+    --accent: 225 6 0;
+    --accent-ink: 255 255 255;
+    color-scheme: light;
+  }
+
+  .dark {
+    --canvas: 11 11 14;
+    --surface: 21 21 26;
+    --raised: 30 30 37;
+    --line: 42 42 51;
+    --ink: 242 242 245;
+    --muted: 150 150 162;
+    --faint: 98 98 110;
+    --accent: 255 30 22;
+    --accent-ink: 255 255 255;
+    color-scheme: dark;
+  }
+
+  html,
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  ::selection {
+    @apply bg-accent text-accent-ink;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-canvas;
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@layer components {
+  /* Panels */
+  .panel {
+    @apply bg-surface border border-line rounded-xl;
+  }
+
+  /* Small uppercase label used above titles and in table heads */
+  .kicker {
+    @apply font-display uppercase tracking-[0.18em] text-[0.8rem] font-semibold text-muted;
+  }
+
+  .num {
+    @apply font-mono tabular-nums;
+  }
+
+  /* Timing-tower table */
+  .f1-table {
+    @apply w-full text-left border-collapse;
+  }
+  .f1-table thead th {
+    @apply kicker px-4 py-3 border-b border-line bg-surface whitespace-nowrap;
+  }
+  .f1-table tbody td {
+    @apply px-4 py-3 border-b border-line/70 align-middle;
+  }
+  .f1-table tbody tr:last-child td {
+    @apply border-b-0;
+  }
+  .f1-table tbody tr {
+    @apply transition-colors;
+  }
+  .f1-table tbody tr:hover td {
+    @apply bg-raised/60;
+  }
+
+  /* Slanted F1 tag */
+  .tag {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 font-display uppercase tracking-wider text-xs font-bold;
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg font-semibold text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+  .btn-accent {
+    @apply btn bg-accent text-accent-ink hover:bg-accent/90;
+  }
+  .btn-ghost {
+    @apply btn border border-line text-ink hover:border-ink/40 hover:bg-raised;
+  }
 }
 
-.hide-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+@layer utilities {
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Checkered-flag micro pattern */
+  .checker {
+    background-image: conic-gradient(
+      rgb(var(--ink) / 0.9) 25%,
+      transparent 0 50%,
+      rgb(var(--ink) / 0.9) 0 75%,
+      transparent 0
+    );
+    background-size: 8px 8px;
+  }
+
+  /* Speed-line backdrop */
+  .speedlines {
+    background-image: repeating-linear-gradient(
+      -62deg,
+      rgb(var(--ink) / 0.04) 0 2px,
+      transparent 2px 14px
+    );
+  }
 }
 
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari and Opera */
+/* Thin themed scrollbars */
+.main-scrollbar,
+.navbar-scrollbar {
+  scrollbar-color: rgb(var(--line)) transparent;
+  scrollbar-width: thin;
+}
+.main-scrollbar::-webkit-scrollbar,
+.navbar-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.main-scrollbar::-webkit-scrollbar-thumb,
+.navbar-scrollbar::-webkit-scrollbar-thumb {
+  background: rgb(var(--line));
+  border-radius: 8px;
+}
+.main-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--accent));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -1,109 +1,117 @@
 import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import { useSeason } from "../context/SeasonContext";
 import DriverImageWithFallback from "./DriverImageWithFallback";
+import { constructorColor } from "../utils/teams";
+import { FlagImg } from "./RaceUI";
 
-export default function Top3Podium({
-  top3 = [],
-  displayedSeason,
-  fallbackMessage,
-}) {
+const MEDAL = { 1: "bg-gold", 2: "bg-silver", 3: "bg-bronze" };
+// Display order on wide screens: P2 – P1 – P3
+const ORDER = { 1: "md:order-2", 2: "md:order-1", 3: "md:order-3" };
+
+function PodiumCard({ standing, leaderPoints }) {
+  const { Driver: driver, Constructors = [], position, points, wins } = standing;
+  const team = Constructors[0];
+  const color = constructorColor(team);
+  const isFirst = position === "1";
+  const gap = Number(leaderPoints) - Number(points);
+
+  return (
+    <article
+      className={`group relative overflow-hidden rounded-xl border border-line bg-surface ${ORDER[position]} ${
+        isFirst ? "md:-mt-6" : ""
+      } animate-rise`}
+      style={{ animationDelay: `${Number(position) * 80}ms` }}
+    >
+      {/* livery wash */}
+      <div
+        className="absolute inset-0 opacity-[0.16] dark:opacity-25"
+        style={{ background: `linear-gradient(160deg, ${color} 0%, transparent 65%)` }}
+      />
+      <div className="absolute inset-x-0 top-0 h-1" style={{ backgroundColor: color }} />
+
+      {/* giant position numeral */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -right-2 -top-6 font-display text-[11rem] font-extrabold italic leading-none text-ink/[0.06]"
+      >
+        {position}
+      </span>
+
+      <div className="relative flex h-full flex-col p-5">
+        <div className="flex items-center justify-between">
+          <span
+            className={`tag ${MEDAL[position]} text-black`}
+          >
+            P{position}
+          </span>
+          <span className="kicker text-[0.7rem]">{team?.name}</span>
+        </div>
+
+        <div className={`relative mx-auto mt-4 ${isFirst ? "h-44 w-44" : "h-36 w-36"}`}>
+          <div className="absolute inset-0 rounded-full" style={{ backgroundColor: `${color}33` }} />
+          <DriverImageWithFallback
+            driverName={driver.givenName}
+            familyName={driver.familyName}
+            className="relative h-full w-full rounded-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.04]"
+          />
+        </div>
+
+        <div className="mt-5 flex items-end justify-between gap-3">
+          <div className="min-w-0">
+            <p className="flex items-center gap-2 text-sm text-muted">
+              <FlagImg nationality={driver.nationality} />
+              {driver.givenName}
+            </p>
+            <p className="truncate font-display text-3xl font-extrabold uppercase leading-none tracking-tight text-ink">
+              {driver.familyName}
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="num text-3xl font-bold leading-none text-ink">{points}</p>
+            <p className="kicker mt-1 text-[0.65rem]">pts</p>
+          </div>
+        </div>
+
+        <div className="mt-4 flex items-center justify-between border-t border-line pt-3 text-sm">
+          <span className="text-muted">
+            <span className="num text-ink">{wins}</span> victoire{Number(wins) > 1 ? "s" : ""}
+          </span>
+          <span className="num text-muted">{isFirst ? "Leader" : `−${gap}`}</span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+export default function Top3Podium({ top3 = [], displayedSeason, fallbackMessage }) {
   const { season } = useSeason();
   const seasonToDisplay = displayedSeason ?? season;
 
-  const sizes = {
-    1: "h-64 w-60",
-    2: "h-56 w-52",
-    3: "h-52 w-48",
-  };
-
-  const colors = {
-    1: "from-yellow-400 via-yellow-300 to-yellow-500",
-    2: "from-slate-300 via-gray-200 to-slate-400",
-    3: "from-amber-500 via-orange-400 to-orange-600",
-  };
-
-  const badges = {
-    1: "🥇",
-    2: "🥈",
-    3: "🥉",
-  };
-
   return (
-    <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-gray-800 dark:to-gray-900 rounded-3xl shadow-2xl p-4 md:p-6 border border-red-200 dark:border-red-900">
-      <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-6 md:mb-8 px-1 md:px-2">
-        <div className="flex items-center gap-3">
-          <div className="w-1 h-8 bg-red-600 rounded-full"></div>
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Podium {seasonToDisplay}
-          </h3>
+    <section>
+      <div className="mb-5 flex items-end justify-between gap-4">
+        <div>
+          <p className="kicker mb-1">Championnat pilotes {seasonToDisplay}</p>
+          <h2 className="font-display text-3xl font-bold uppercase tracking-tight text-ink">Le top 3</h2>
         </div>
-
-        <Link
-          to="/drivers"
-          className="group flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl"
-        >
+        <Link to="/drivers" className="group inline-flex items-center gap-2 text-sm font-semibold text-ink hover:text-accent">
           Classement complet
-          <span className="group-hover:translate-x-1 transition-transform">→</span>
+          <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
         </Link>
       </div>
 
-      {fallbackMessage ? (
-        <p className="mb-2 px-2 text-center text-sm font-medium text-red-700 dark:text-red-300">
-          {fallbackMessage}
-        </p>
-      ) : null}
-
-      {top3.length === 0 && !fallbackMessage ? (
-        <p className="py-8 md:py-10 text-center text-gray-700 dark:text-gray-300">
-          Le podium sera disponible apres le premier Grand Prix.
-        </p>
-      ) : null}
-
-      {top3.length > 0 ? (
-        <div className="flex justify-center items-end flex-wrap gap-4 md:gap-6 px-1 md:px-4">
-          {top3.map((d) => {
-            const driver = d.Driver;
-            const isFirst = d.position === "1";
-
-            return (
-              <div
-                key={driver.driverId}
-                className={`relative ${sizes[d.position]} ${
-                  isFirst ? "scale-105" : ""
-                } transition-transform hover:scale-105 duration-300`}
-              >
-                <div
-                  className={`h-full bg-gradient-to-br ${colors[d.position]} rounded-3xl shadow-2xl flex flex-col items-center justify-end p-4 border-4 ${
-                    isFirst ? "border-yellow-300" : "border-white/50"
-                  }`}
-                >
-                  <div className="absolute -top-12 w-32 h-32 bg-white dark:bg-gray-100 rounded-full shadow-2xl border-4 border-white"></div>
-
-                  <DriverImageWithFallback
-                    driverName={driver.givenName}
-                    familyName={driver.familyName}
-                    className="absolute -top-10 w-28 h-28 object-cover rounded-full border-4 border-white shadow-xl"
-                  />
-
-                  <div className="absolute -top-4 right-3 text-4xl">{badges[d.position]}</div>
-
-                  <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full shadow-md">
-                    <p className="text-xs font-bold text-gray-800">P{d.position}</p>
-                  </div>
-
-                  <div className="mt-20 text-center text-white space-y-1 w-full">
-                    <p className="text-xl font-bold drop-shadow-lg">{driver.familyName}</p>
-                    <p className="text-base opacity-95 font-medium">{driver.givenName}</p>
-                    <div className="mt-2 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 inline-block">
-                      <p className="text-base font-bold">{d.points} pts</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+      {top3.length === 0 ? (
+        <div className="panel speedlines px-6 py-12 text-center text-muted">
+          {fallbackMessage ?? "Le podium sera disponible après le premier Grand Prix."}
         </div>
-      ) : null}
-    </div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-3 md:items-end md:pt-6">
+          {top3.map((s) => (
+            <PodiumCard key={s.Driver.driverId} standing={s} leaderPoints={top3[0].points} />
+          ))}
+        </div>
+      )}
+    </section>
   );
 }

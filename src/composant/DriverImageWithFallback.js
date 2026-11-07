@@ -7,7 +7,7 @@ function DriverImageWithFallback({ driverName, familyName, className }) {
   if (imageError) {
     return (
       <div
-        className={`${className} flex items-center justify-center bg-gradient-to-br from-red-500 to-red-700 text-white font-bold text-2xl rounded-full border-4 border-white shadow-xl`}
+        className={`${className} flex items-center justify-center bg-raised text-muted font-display font-bold italic text-2xl rounded-full`}
         title={`${driverName} ${familyName}`}
       >
         {initials}

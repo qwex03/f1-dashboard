@@ -1,37 +1,42 @@
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
 export default function Pagination({ currentPage, totalPages, onPageChange }) {
+  if (totalPages <= 1) return null;
+
   return (
-    <div className="mt-8 flex items-center justify-center gap-2">
+    <nav className="mt-10 flex items-center justify-center gap-2" aria-label="Pagination">
       <button
         onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
         disabled={currentPage === 1}
-        className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors hover:bg-red-700"
+        className="btn-ghost w-10 px-0"
+        aria-label="Page précédente"
       >
-        Précédent
+        <ChevronLeft size={18} />
       </button>
 
-      <div className="flex gap-1">
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-          <button
-            key={page}
-            onClick={() => onPageChange(page)}
-            className={`px-3 py-2 rounded-lg font-semibold transition-colors ${
-              currentPage === page
-                ? "bg-red-600 text-white"
-                : "bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700"
-            }`}
-          >
-            {page}
-          </button>
-        ))}
-      </div>
+      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+        <button
+          key={page}
+          onClick={() => onPageChange(page)}
+          aria-current={currentPage === page ? "page" : undefined}
+          className={`h-10 w-10 rounded-lg font-mono text-sm tabular-nums transition-colors ${
+            currentPage === page
+              ? "bg-accent text-accent-ink"
+              : "text-muted hover:bg-raised hover:text-ink"
+          }`}
+        >
+          {page}
+        </button>
+      ))}
 
       <button
         onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
         disabled={currentPage === totalPages}
-        className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors hover:bg-red-700"
+        className="btn-ghost w-10 px-0"
+        aria-label="Page suivante"
       >
-        Suivant
+        <ChevronRight size={18} />
       </button>
-    </div>
+    </nav>
   );
 }

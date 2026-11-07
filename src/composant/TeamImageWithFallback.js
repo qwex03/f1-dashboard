@@ -41,7 +41,7 @@ function TeamImageWithFallback({ teamName, className }) {
 
   return (
     <img
-      src={`team-img/${normalizedName}.avif`}
+      src={`/team-img/${normalizedName}.avif`}
       alt={teamName}
       className={className}
       onError={() => setImageError(true)}
