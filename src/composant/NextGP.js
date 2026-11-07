@@ -55,9 +55,9 @@ function Countdown({ target }) {
     ["s", t.s],
   ];
   return (
-    <div className="flex gap-2">
+    <div className="grid grid-cols-4 gap-2 sm:flex">
       {cells.map(([unit, v]) => (
-        <div key={unit} className="min-w-[4.25rem] rounded-lg bg-black/25 px-3 py-2 text-center backdrop-blur-sm">
+        <div key={unit} className="rounded-lg bg-black/25 px-2 py-2 sm:min-w-[4.25rem] sm:px-3 text-center backdrop-blur-sm">
           <div className="num text-3xl font-bold leading-none text-white md:text-4xl">
             {String(v).padStart(2, "0")}
           </div>
@@ -78,12 +78,12 @@ function NextRaceHero({ race }) {
       <div className="absolute inset-0 opacity-30 [background-image:repeating-linear-gradient(-62deg,rgba(0,0,0,.25)_0_2px,transparent_2px_16px)]" />
       <div className="absolute right-0 top-0 h-full w-40 checker opacity-[0.08] [--ink:255_255_255]" />
 
-      <div className="relative grid gap-8 p-6 md:p-8 lg:grid-cols-[1.3fr_1fr]">
+      <div className="relative grid gap-6 p-5 sm:gap-8 md:p-8 lg:grid-cols-[1.3fr_1fr]">
         <div className="flex flex-col">
           <p className="font-display text-sm font-semibold uppercase tracking-[0.2em] text-white/80">
             Prochain Grand Prix · Manche {race.round}
           </p>
-          <h2 className="mt-2 font-display text-5xl font-extrabold italic uppercase leading-[0.9] tracking-tight md:text-7xl">
+          <h2 className="mt-2 font-display text-[2.6rem] font-extrabold italic uppercase leading-[0.9] tracking-tight sm:text-5xl md:text-7xl">
             {race.raceName.replace("Grand Prix", "").trim() || race.raceName}
             <span className="block text-white/60">Grand Prix</span>
           </h2>
@@ -91,7 +91,7 @@ function NextRaceHero({ race }) {
             {flag && <img src={flag} alt="" className="h-3.5 w-5 rounded-[2px] object-cover" />}
             {race.Circuit.circuitName} · {race.Circuit.Location.locality ?? country}
           </p>
-          <div className="mt-auto pt-8">
+          <div className="mt-auto pt-6 sm:pt-8">
             <p className="mb-2 font-display text-xs uppercase tracking-[0.2em] text-white/70">Départ dans</p>
             <Countdown target={sessionDate(race).getTime()} />
           </div>
@@ -107,7 +107,7 @@ function NextRaceHero({ race }) {
                   main ? "bg-white text-black" : past ? "text-white/45" : "text-white"
                 }`}
               >
-                <span className="font-display text-base font-semibold uppercase tracking-wide">{label}</span>
+                <span className="font-display text-sm font-semibold uppercase tracking-wide sm:text-base">{label}</span>
                 <span className="num text-sm">
                   {fmt(s, "EEE d MMM")} <span className="font-bold">{s.time ? fmt(s, "HH:mm") : "—"}</span>
                 </span>
@@ -123,7 +123,7 @@ function NextRaceHero({ race }) {
 function UpcomingCard({ race }) {
   const country = race.Circuit.Location.country;
   return (
-    <li className="panel group flex min-w-[15rem] flex-1 flex-col gap-3 p-4 transition-colors hover:border-ink/30">
+    <li className="panel group flex min-w-[14rem] flex-1 snap-start flex-col gap-3 p-4 transition-colors hover:border-ink/30">
       <div className="flex items-center justify-between">
         <span className="kicker text-[0.7rem]">R{race.round}</span>
         {race.Sprint && <span className="tag bg-ink text-canvas">Sprint</span>}
@@ -169,11 +169,11 @@ export default function NextGP() {
           <div className="mb-4 flex items-end justify-between">
             <div>
               <p className="kicker mb-1">Calendrier</p>
-              <h2 className="font-display text-3xl font-bold uppercase tracking-tight text-ink">À suivre</h2>
+              <h2 className="font-display text-2xl font-bold uppercase tracking-tight text-ink sm:text-3xl">À suivre</h2>
             </div>
             <span className="num text-sm text-muted">{rest.length} course{rest.length > 1 ? "s" : ""}</span>
           </div>
-          <ul className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
+          <ul className="-mx-4 flex snap-x scroll-px-4 gap-3 overflow-x-auto px-4 pb-2 hide-scrollbar sm:mx-0 sm:px-0">
             {rest.map((race) => (
               <UpcomingCard key={race.round} race={race} />
             ))}

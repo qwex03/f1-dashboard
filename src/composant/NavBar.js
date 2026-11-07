@@ -13,7 +13,7 @@ import {
   EarthIcon,
 } from "lucide-react";
 
-const LINKS = [
+export const LINKS = [
   { to: "/", label: "Accueil", icon: Gauge },
   { to: "/drivers", label: "Pilotes", icon: UserIcon },
   { to: "/teams", label: "Équipes", icon: UsersIcon },
@@ -23,7 +23,7 @@ const LINKS = [
   { to: "/calendrier", label: "Calendrier 3D", icon: EarthIcon },
 ];
 
-function Logo({ collapsed }) {
+export function Logo({ collapsed }) {
   return (
     <NavLink to="/" className="flex items-center gap-2.5 select-none" title="Apex F1">
       <span className="relative flex h-8 w-9 shrink-0 items-center justify-center">
@@ -44,7 +44,7 @@ export default function Navbar({ collapsed, setCollapsed }) {
 
   return (
     <nav
-      className={`navbar-scrollbar fixed inset-y-0 left-0 z-30 flex flex-col
+      className={`navbar-scrollbar fixed inset-y-0 left-0 z-30 hidden md:flex flex-col
         border-r border-line bg-surface
         overflow-y-auto overflow-x-hidden transition-[width] duration-300
         ${collapsed ? "w-20 px-3" : "w-64 px-4"}`}

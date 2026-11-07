@@ -49,9 +49,9 @@ export function DriverName({ driver, constructor, showFlag = true }) {
   return (
     <span className="flex min-w-0 items-center gap-3">
       {constructor !== undefined && <TeamStripe constructor={constructor} />}
-      {showFlag && <FlagImg nationality={driver.nationality} />}
+      {showFlag && <FlagImg nationality={driver.nationality} className="hidden sm:block" />}
       <span className="min-w-0 truncate leading-tight">
-        <span className="text-muted">{driver.givenName} </span>
+        <span className="hidden text-muted sm:inline">{driver.givenName} </span>
         <span className="font-display text-[1.05rem] font-bold uppercase tracking-wide text-ink">
           {driver.familyName}
         </span>
@@ -66,7 +66,7 @@ export function TeamName({ constructor, withLogo = true }) {
     <span className="flex min-w-0 items-center gap-3">
       <TeamStripe constructor={constructor} />
       {withLogo && (
-        <TeamImageWithFallback teamName={constructor.name} className="h-7 w-7 shrink-0 object-contain" />
+        <TeamImageWithFallback teamName={constructor.name} className="h-6 w-6 shrink-0 object-contain sm:h-7 sm:w-7" />
       )}
       <span className="truncate font-semibold text-ink">{constructor.name}</span>
     </span>

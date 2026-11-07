@@ -4,7 +4,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
   if (totalPages <= 1) return null;
 
   return (
-    <nav className="mt-10 flex items-center justify-center gap-2" aria-label="Pagination">
+    <nav className="mt-8 flex flex-wrap items-center justify-center gap-1 sm:mt-10 sm:gap-2" aria-label="Pagination">
       <button
         onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
         disabled={currentPage === 1}

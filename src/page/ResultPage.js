@@ -249,7 +249,7 @@ export default function ResultPage() {
                 <th className="w-16">Pos</th>
                 <th>Pilote</th>
                 <th className="hidden md:table-cell">Écurie</th>
-                <th className="text-right">Temps / écart</th>
+                <th className="text-right">Temps</th>
                 <th className="text-right">Pts</th>
               </tr>
             </thead>
@@ -316,7 +316,7 @@ export default function ResultPage() {
               <table className="f1-table text-sm">
                 <thead>
                   <tr>
-                    <th className="sticky left-0 z-10 min-w-[15rem]">Pilote</th>
+                    <th className="sticky left-0 z-10 min-w-[8.5rem] sm:min-w-[15rem]">Pilote</th>
                     {races.map((race) => (
                       <th key={race.round} className="min-w-[3.5rem] !px-1 text-center" title={race.raceName}>
                         <span className="block text-faint">R{race.round}</span>
@@ -390,13 +390,13 @@ export default function ResultPage() {
         ))}
 
       {viewMode === "gp" && selectedRound && (
-        <section className="mt-8">
+        <section className="mt-6 sm:mt-8">
           <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="kicker mb-1">
                 Manche {selectedRound} · {sessionView === "sprint" ? "Sprint" : "Course"}
               </p>
-              <h2 className="font-display text-3xl font-bold uppercase tracking-tight text-ink md:text-4xl">
+              <h2 className="font-display text-2xl font-bold uppercase tracking-tight text-ink sm:text-3xl md:text-4xl">
                 {selectedRace?.raceName}
               </h2>
             </div>
