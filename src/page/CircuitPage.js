@@ -2,93 +2,89 @@ import useFetch from "../hooks/useFetch";
 import { getFlagImg } from "../utils/flags";
 import { useSeason } from "../context/SeasonContext";
 import PageHeader from "../composant/PageHeader";
+import { Loading, Notice } from "../composant/RaceUI";
+
+function raceDate(r) {
+  return new Date(`${r.date}T${r.time || "12:00:00Z"}`);
+}
 
 export default function CircuitPage() {
   const { season } = useSeason();
-  const { data, loading, error } = useFetch(
-    `https://api.jolpi.ca/ergast/f1/${season}/races/`
-  );
+  const { data, loading, error } = useFetch(`https://api.jolpi.ca/ergast/f1/${season}/races/`);
 
-  const circuits = data?.MRData?.RaceTable?.Races ?? [];
+  const races = data?.MRData?.RaceTable?.Races ?? [];
+  const now = Date.now();
+  const nextIndex = races.findIndex((r) => raceDate(r).getTime() + 3 * 36e5 >= now);
 
   return (
-    <div className="space-y-8">
-      <PageHeader 
-        title="Circuit"
-        description="Infos sur les circuits de la saison"
+    <div className="pb-16">
+      <PageHeader
+        kicker={`Saison ${season} · ${races.length || "—"} manches`}
+        title="Circuits"
+        description="Toutes les étapes du calendrier, de la première à la dernière manche."
       />
 
-      {loading && <p className="text-gray-600 dark:text-gray-400">Chargement...</p>}
-      {error && <p className="text-red-500">Erreur : {error}</p>}
+      {loading ? (
+        <Loading rows={10} />
+      ) : error ? (
+        <Notice tone="error">Erreur : {error}</Notice>
+      ) : (
+        <ol className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {races.map((race, i) => {
+            const country = race.Circuit.Location.country;
+            const flag = getFlagImg(country);
+            const isNext = i === nextIndex;
+            const isPast = nextIndex === -1 || i < nextIndex;
+            const d = raceDate(race);
 
-      {!loading && !error && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 animate-fadeIn">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">
-                  #
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">
-                  Nom du circuit
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">
-                  Pays
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">
-                  Date
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {circuits.map((circuit, i) => (
-                <tr
-                  key={circuit.round}
-                  className="group hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors animate-fadeIn"
-                  style={{ animationDelay: `${i * 0.05}s` }}
+            return (
+              <li
+                key={race.round}
+                className={`group relative flex overflow-hidden rounded-xl border transition-colors animate-rise ${
+                  isNext
+                    ? "border-accent bg-accent/[0.06]"
+                    : "border-line bg-surface hover:border-ink/30"
+                } ${isPast ? "opacity-60 hover:opacity-100" : ""}`}
+                style={{ animationDelay: `${Math.min(i, 12) * 30}ms` }}
+              >
+                {/* Date block */}
+                <div
+                  className={`flex w-20 shrink-0 flex-col items-center justify-center border-r ${
+                    isNext ? "border-accent/40 bg-accent text-accent-ink" : "border-line bg-raised/50 text-ink"
+                  }`}
                 >
-                  <td className="group-hover:text-red-600 px-6 py-4 text-gray-900 dark:text-gray-100 font-medium">
-                    {circuit.round}
-                  </td>
-                  <td className="group-hover:text-red-600 px-6 py-4 text-gray-900 dark:text-gray-100 font-medium">
-                    {circuit.Circuit.circuitName}
-                  </td>
-                  <td className="group-hover:text-red-600 px-6 py-4 text-gray-900 dark:text-gray-100 font-medium flex items-center gap-2">
-                    {getFlagImg(circuit.Circuit.Location.country) && (
-                      <img
-                        src={getFlagImg(circuit.Circuit.Location.country)}
-                        alt={circuit.Circuit.Location.country}
-                        className="w-6 h-4 object-contain"
-                      />
-                    )}
-                    {circuit.Circuit.Location.country}
-                  </td>
-                  <td className="group-hover:text-red-600 px-6 py-4 text-gray-900 dark:text-gray-100 font-medium">
-                    {circuit.date}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+                  <span className="num text-3xl font-bold leading-none">
+                    {d.toLocaleDateString("fr-FR", { day: "2-digit" })}
+                  </span>
+                  <span className="mt-1 font-display text-sm font-semibold uppercase tracking-widest opacity-80">
+                    {d.toLocaleDateString("fr-FR", { month: "short" }).replace(".", "")}
+                  </span>
+                </div>
 
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.4s ease-out forwards;
-          opacity: 0;
-        }
-      `}</style>
+                <div className="min-w-0 flex-1 p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="kicker text-[0.7rem]">Manche {race.round}</span>
+                    {isNext ? (
+                      <span className="tag bg-accent text-accent-ink">Prochaine</span>
+                    ) : isPast ? (
+                      <span className="kicker text-[0.65rem] text-faint">Terminée</span>
+                    ) : race.Sprint ? (
+                      <span className="tag bg-ink text-canvas">Sprint</span>
+                    ) : null}
+                  </div>
+                  <p className="mt-1 truncate font-display text-xl font-bold uppercase leading-tight tracking-tight text-ink">
+                    {race.raceName.replace("Grand Prix", "GP")}
+                  </p>
+                  <p className="mt-1 flex items-center gap-2 truncate text-sm text-muted">
+                    {flag && <img src={flag} alt="" className="h-3 w-4 shrink-0 rounded-[2px]" />}
+                    <span className="truncate">{race.Circuit.circuitName}</span>
+                  </p>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      )}
     </div>
   );
 }

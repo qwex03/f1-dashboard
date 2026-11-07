@@ -1,5 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import '@fontsource/barlow-condensed/500.css';
+import '@fontsource/barlow-condensed/600.css';
+import '@fontsource/barlow-condensed/700.css';
+import '@fontsource/barlow-condensed/800.css';
+import '@fontsource/barlow-condensed/700-italic.css';
+import '@fontsource/barlow-condensed/800-italic.css';
+import '@fontsource/titillium-web/400.css';
+import '@fontsource/titillium-web/600.css';
+import '@fontsource/titillium-web/700.css';
+import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/jetbrains-mono/500.css';
+import '@fontsource/jetbrains-mono/700.css';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';

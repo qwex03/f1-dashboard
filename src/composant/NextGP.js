@@ -1,153 +1,185 @@
-import { useEffect, useRef, useState } from "react";
-import useFetch from "../hooks/useFetch";
-import { ChevronLeft, ChevronRight, Clock, Flag, Trophy } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { formatInTimeZone } from "date-fns-tz";
+import { fr } from "date-fns/locale";
+import useFetch from "../hooks/useFetch";
 import { getFlagImg } from "../utils/flags";
+import { Loading, Notice } from "./RaceUI";
 
-const FRENCH_TIME_ZONE = "Europe/Paris";
+const TZ = "Europe/Paris";
 
-function getSessionDateTime(session) {
+function sessionDate(session) {
   return new Date(`${session.date}T${session.time || "00:00:00Z"}`);
 }
 
-function formatFrenchDate(session) {
-  return formatInTimeZone(getSessionDateTime(session), FRENCH_TIME_ZONE, "dd/MM/yyyy");
+function fmt(session, pattern) {
+  return formatInTimeZone(sessionDate(session), TZ, pattern, { locale: fr });
 }
 
-function formatFrenchSession(session) {
-  if (!session) return "N/A";
-
-  const format = session.time ? "dd/MM/yyyy 'à' HH:mm" : "dd/MM/yyyy";
-  return formatInTimeZone(getSessionDateTime(session), FRENCH_TIME_ZONE, format);
+function sessionsOf(race) {
+  const list = [{ label: "Essais libres 1", s: race.FirstPractice }];
+  if (race.Sprint) {
+    list.push({ label: "Qualifs sprint", s: race.SprintQualifying ?? race.SprintShootout });
+    list.push({ label: "Sprint", s: race.Sprint });
+  } else {
+    list.push({ label: "Essais libres 2", s: race.SecondPractice });
+    list.push({ label: "Essais libres 3", s: race.ThirdPractice });
+  }
+  list.push({ label: "Qualifications", s: race.Qualifying });
+  list.push({ label: "Course", s: race, main: true });
+  return list
+    .filter((x) => x.s?.date)
+    .sort((a, b) => sessionDate(a.s) - sessionDate(b.s));
 }
 
-export default function NextGPCarousel() {
-  const { data, loading, error } = useFetch(
-    "https://api.jolpi.ca/ergast/f1/current/races/"
-  );
-
-  const [upcomingRaces, setUpcomingRaces] = useState([]);
-  const carouselRef = useRef(null);
-
+function useCountdown(target) {
+  const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
-    if (data) {
-      const races = data?.MRData?.RaceTable?.Races || [];
-      const today = new Date();
-      const futureRaces = races.filter((race) => getSessionDateTime(race) >= today);
-      setUpcomingRaces(futureRaces);
-    }
-  }, [data]);
-
-  const scroll = (direction) => {
-    if (carouselRef.current) {
-      const cardWidth = 320 + 24;
-      carouselRef.current.scrollBy({
-        left: direction === "left" ? -(cardWidth * 2) : cardWidth * 2,
-        behavior: "smooth",
-      });
-    }
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const diff = Math.max(0, target - now);
+  return {
+    d: Math.floor(diff / 864e5),
+    h: Math.floor((diff / 36e5) % 24),
+    m: Math.floor((diff / 6e4) % 60),
+    s: Math.floor((diff / 1e3) % 60),
   };
+}
 
-  if (loading) return <p className="text-center py-4">Chargement...</p>;
-  if (error) return <p className="text-center py-4 text-red-500">Erreur : {error}</p>;
-  if (!upcomingRaces.length) return <p className="text-center py-4">Pas de course à venir</p>;
+function Countdown({ target }) {
+  const t = useCountdown(target);
+  const cells = [
+    ["j", t.d],
+    ["h", t.h],
+    ["min", t.m],
+    ["s", t.s],
+  ];
+  return (
+    <div className="flex gap-2">
+      {cells.map(([unit, v]) => (
+        <div key={unit} className="min-w-[4.25rem] rounded-lg bg-black/25 px-3 py-2 text-center backdrop-blur-sm">
+          <div className="num text-3xl font-bold leading-none text-white md:text-4xl">
+            {String(v).padStart(2, "0")}
+          </div>
+          <div className="mt-1 font-display text-xs uppercase tracking-widest text-white/70">{unit}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function NextRaceHero({ race }) {
+  const country = race.Circuit.Location.country;
+  const flag = getFlagImg(country);
+  const now = Date.now();
 
   return (
-    <div className="w-full relative py-8">
-      <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-        Prochains Grands Prix
-      </h2>
+    <article className="relative overflow-hidden rounded-xl bg-accent text-white animate-rise">
+      <div className="absolute inset-0 opacity-30 [background-image:repeating-linear-gradient(-62deg,rgba(0,0,0,.25)_0_2px,transparent_2px_16px)]" />
+      <div className="absolute right-0 top-0 h-full w-40 checker opacity-[0.08] [--ink:255_255_255]" />
 
-      <button
-        onClick={() => scroll("left")}
-        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 p-2 rounded-full shadow hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-      >
-        <ChevronLeft className="h-6 w-6 text-gray-800 dark:text-white" />
-      </button>
+      <div className="relative grid gap-8 p-6 md:p-8 lg:grid-cols-[1.3fr_1fr]">
+        <div className="flex flex-col">
+          <p className="font-display text-sm font-semibold uppercase tracking-[0.2em] text-white/80">
+            Prochain Grand Prix · Manche {race.round}
+          </p>
+          <h2 className="mt-2 font-display text-5xl font-extrabold italic uppercase leading-[0.9] tracking-tight md:text-7xl">
+            {race.raceName.replace("Grand Prix", "").trim() || race.raceName}
+            <span className="block text-white/60">Grand Prix</span>
+          </h2>
+          <p className="mt-4 flex items-center gap-2 text-white/85">
+            {flag && <img src={flag} alt="" className="h-3.5 w-5 rounded-[2px] object-cover" />}
+            {race.Circuit.circuitName} · {race.Circuit.Location.locality ?? country}
+          </p>
+          <div className="mt-auto pt-8">
+            <p className="mb-2 font-display text-xs uppercase tracking-[0.2em] text-white/70">Départ dans</p>
+            <Countdown target={sessionDate(race).getTime()} />
+          </div>
+        </div>
 
-      <button
-        onClick={() => scroll("right")}
-        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 p-2 rounded-full shadow hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-      >
-        <ChevronRight className="h-6 w-6 text-gray-800 dark:text-white" />
-      </button>
-
-      <div
-        ref={carouselRef}
-        className="flex overflow-x-auto scroll-smooth space-x-6 px-4 w-full hide-scrollbar scroll-snap-type-x-mandatory"
-      >
-        {upcomingRaces.map((race, index) => {
-          const isNext = index === 0;
-          return (
-            <div
-              key={race.round}
-              className={`flex-shrink-0 w-80 p-6 rounded-xl shadow-xl border transition-transform scroll-snap-align-start ${
-                isNext
-                  ? "bg-gradient-to-br from-red-600 to-red-800 text-white border-red-700"
-                  : "bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
-              }`}
-            >
-              <h3 className="text-xl font-bold mb-3">{race.raceName}</h3>
-              <p className="text-sm mb-2">
-                <span className="font-semibold">Circuit :</span> {race.Circuit.circuitName}
-              </p>
-              <p className="text-sm mb-3 flex items-center">
-                <span className="font-semibold mr-1">Pays :</span>
-                {getFlagImg(race.Circuit.Location.country) && (
-                  <img
-                    src={getFlagImg(race.Circuit.Location.country)}
-                    className="w-5 h-4 mr-2 rounded-sm"
-                    alt={race.Circuit.Location.country}
-                  />
-                )}
-                {race.Circuit.Location.country}
-              </p>
-              <p className="text-sm mb-4">
-                <span className="font-semibold">Date :</span> {formatFrenchDate(race)}
-              </p>
-              <div className="text-sm space-y-2">
-                <p className="flex items-center">
-                  <Clock className="h-4 w-4 mr-2 flex-shrink-0" />
-                  <span className="font-semibold">FP1 :</span>{" "}
-                  {formatFrenchSession(race.FirstPractice)}
-                </p>
-                {race.Sprint ? (
-                  <>
-                    <p className="flex items-center">
-                      <Flag className="h-4 w-4 mr-2 flex-shrink-0" />
-                      <span className="font-semibold">Qualif Sprint :</span>{" "}
-                      {formatFrenchSession(race.Qualifying)}
-                    </p>
-                    <p className="flex items-center">
-                      <Trophy className="h-4 w-4 mr-2 flex-shrink-0" />
-                      <span className="font-semibold">Sprint :</span>{" "}
-                      {formatFrenchSession(race.Sprint)}
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className="flex items-center">
-                      <Clock className="h-4 w-4 mr-2 flex-shrink-0" />
-                      <span className="font-semibold">FP2 :</span>{" "}
-                      {formatFrenchSession(race.SecondPractice)}
-                    </p>
-                    <p className="flex items-center">
-                      <Flag className="h-4 w-4 mr-2 flex-shrink-0" />
-                      <span className="font-semibold">Qualif :</span>{" "}
-                      {formatFrenchSession(race.Qualifying)}
-                    </p>
-                  </>
-                )}
-                <p className="flex items-center">
-                  <Flag className="h-4 w-4 mr-2 flex-shrink-0" />
-                  <span className="font-semibold">Course :</span>{" "}
-                  {formatFrenchSession(race)}
-                </p>
-              </div>
-            </div>
-          );
-        })}
+        <ol className="self-end rounded-lg bg-black/20 p-2 backdrop-blur-sm">
+          {sessionsOf(race).map(({ label, s, main }) => {
+            const past = sessionDate(s).getTime() < now;
+            return (
+              <li
+                key={label}
+                className={`flex items-center justify-between gap-4 rounded-md px-3 py-2.5 ${
+                  main ? "bg-white text-black" : past ? "text-white/45" : "text-white"
+                }`}
+              >
+                <span className="font-display text-base font-semibold uppercase tracking-wide">{label}</span>
+                <span className="num text-sm">
+                  {fmt(s, "EEE d MMM")} <span className="font-bold">{s.time ? fmt(s, "HH:mm") : "—"}</span>
+                </span>
+              </li>
+            );
+          })}
+        </ol>
       </div>
+    </article>
+  );
+}
+
+function UpcomingCard({ race }) {
+  const country = race.Circuit.Location.country;
+  return (
+    <li className="panel group flex min-w-[15rem] flex-1 flex-col gap-3 p-4 transition-colors hover:border-ink/30">
+      <div className="flex items-center justify-between">
+        <span className="kicker text-[0.7rem]">R{race.round}</span>
+        {race.Sprint && <span className="tag bg-ink text-canvas">Sprint</span>}
+      </div>
+      <div>
+        <p className="font-display text-xl font-bold uppercase leading-tight tracking-tight text-ink">
+          {race.raceName.replace("Grand Prix", "GP")}
+        </p>
+        <p className="mt-1 flex items-center gap-2 truncate text-sm text-muted">
+          {getFlagImg(country) && <img src={getFlagImg(country)} alt="" className="h-3 w-4 rounded-[2px]" />}
+          {race.Circuit.circuitName}
+        </p>
+      </div>
+      <p className="num mt-auto text-sm text-ink">
+        {fmt(race, "d MMM")} · <span className="text-muted">{race.time ? fmt(race, "HH:mm") : "—"}</span>
+      </p>
+    </li>
+  );
+}
+
+export default function NextGP() {
+  const { data, loading, error } = useFetch("https://api.jolpi.ca/ergast/f1/current/races/");
+
+  const upcoming = useMemo(() => {
+    const races = data?.MRData?.RaceTable?.Races || [];
+    const now = new Date();
+    // Keep a race "next" until ~3h after lights out
+    return races.filter((r) => sessionDate(r).getTime() + 3 * 36e5 >= now.getTime());
+  }, [data]);
+
+  if (loading) return <Loading rows={4} />;
+  if (error) return <Notice tone="error">Impossible de charger le calendrier : {error}</Notice>;
+  if (!upcoming.length) return <Notice>La saison est terminée — rendez-vous l'an prochain.</Notice>;
+
+  const [next, ...rest] = upcoming;
+
+  return (
+    <div className="space-y-10">
+      <NextRaceHero race={next} />
+
+      {rest.length > 0 && (
+        <section>
+          <div className="mb-4 flex items-end justify-between">
+            <div>
+              <p className="kicker mb-1">Calendrier</p>
+              <h2 className="font-display text-3xl font-bold uppercase tracking-tight text-ink">À suivre</h2>
+            </div>
+            <span className="num text-sm text-muted">{rest.length} course{rest.length > 1 ? "s" : ""}</span>
+          </div>
+          <ul className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
+            {rest.map((race) => (
+              <UpcomingCard key={race.round} race={race} />
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }

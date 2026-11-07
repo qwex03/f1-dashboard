@@ -1,50 +1,60 @@
-export default function ArticleCard({ article }) {
-  const isToday =
-    new Date(article.pubDate).toLocaleDateString("fr-FR") ===
-    new Date().toLocaleDateString("fr-FR");
+import { ArrowUpRight } from "lucide-react";
+
+function stripHtml(html = "") {
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  return div.textContent || "";
+}
+
+export default function ArticleCard({ article, featured = false }) {
+  const date = new Date(article.pubDate?.replace(" ", "T"));
+  const isToday = date.toDateString() === new Date().toDateString();
+  const image = article.enclosure?.link || article.thumbnail;
 
   return (
-    <li className="group overflow-hidden rounded-2xl dark:bg-gray-900 bg-white shadow-md transition hover:shadow-xl">
-      {article.enclosure?.link && (
-        <div className="h-48 overflow-hidden bg-gray-200 dark:bg-gray-700">
-          <img
-            src={article.enclosure.link}
-            alt={article.title}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-            loading="lazy"
-          />
+    <li className={`group ${featured ? "sm:col-span-2 lg:row-span-2" : ""}`}>
+      <a
+        href={article.link}
+        target="_blank"
+        rel="noreferrer"
+        className="panel flex h-full flex-col overflow-hidden transition-colors hover:border-ink/30"
+      >
+        <div className={`relative overflow-hidden bg-raised ${featured ? "aspect-[16/9] lg:aspect-auto lg:flex-1" : "aspect-[16/9]"}`}>
+          {image ? (
+            <img
+              src={image}
+              alt=""
+              loading="lazy"
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            />
+          ) : (
+            <div className="speedlines grid h-full w-full place-items-center">
+              <span className="font-display text-5xl font-extrabold italic uppercase text-ink/10">F1</span>
+            </div>
+          )}
+          {isToday && <span className="tag absolute left-3 top-3 bg-accent text-accent-ink">Aujourd'hui</span>}
         </div>
-      )}
 
-      <div className="flex flex-col gap-3 p-5">
-        <a
-          href={article.link}
-          target="_blank"
-          rel="noreferrer"
-          className="text-lg font-semibold leading-snug text-gray-900 hover:text-red-600 dark:text-white dark:hover:text-red-400 transition-colors duration-300"
-        >
-          {article.title}
-        </a>
-
-        <p
-          className="text-sm text-gray-600 line-clamp-3 dark:text-gray-400"
-          dangerouslySetInnerHTML={{ __html: article.description }}
-        />
-
-        <p className="mt-auto text-xs text-gray-400">
-          {new Date(article.pubDate).toLocaleDateString("fr-FR", {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })}
-        </p>
-
-        {isToday && (
-          <span className="text-xs font-semibold text-red-600">
-            Publié aujourd'hui
+        <div className={`flex flex-col gap-3 p-5 ${featured ? "lg:flex-none" : "flex-1"}`}>
+          <p className="kicker text-[0.7rem]">
+            {isNaN(date)
+              ? ""
+              : date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+          </p>
+          <h3
+            className={`font-display font-bold uppercase leading-[1.05] tracking-tight text-ink transition-colors group-hover:text-accent ${
+              featured ? "text-3xl lg:text-4xl" : "text-xl"
+            }`}
+          >
+            {article.title}
+          </h3>
+          <p className="line-clamp-3 text-sm text-muted">{stripHtml(article.description)}</p>
+          <span className="mt-auto inline-flex items-center gap-1 pt-2 text-sm font-semibold text-ink">
+            Lire l'article
+            <ArrowUpRight size={16} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </span>
-        )}
-      </div>
+        </div>
+      </a>
     </li>
   );
 }
