@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useFetch from "../hooks/useFetch";
+import { apiFetch } from "../utils/api";
 import { useSeason } from "../context/SeasonContext";
 import PageHeader from "../composant/PageHeader";
 import ViewToggle from "../composant/ViewToggle";
@@ -43,11 +44,7 @@ function EquipesPage() {
     async function fetchJsonWithRetry(url, retries = 2, delayMs = 300) {
       for (let attempt = 0; attempt <= retries; attempt += 1) {
         try {
-          const res = await fetch(url);
-          if (!res.ok) {
-            throw new Error(`HTTP ${res.status}`);
-          }
-          return await res.json();
+          return await apiFetch(url);
         } catch (error) {
           if (attempt === retries) {
             throw error;

@@ -1,25 +1,34 @@
 import { useEffect, useState } from "react";
+import { apiFetch, peekCache } from "../utils/api";
 
 export default function useFetch(url) {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [state, setState] = useState(() => {
+    const cached = peekCache(url);
+    return { url, data: cached, loading: Boolean(url) && !cached, error: null };
+  });
 
   useEffect(() => {
-    if (!url) return;
+    if (!url) {
+      setState({ url, data: null, loading: false, error: null });
+      return undefined;
+    }
 
-    setLoading(true);
-    setError(null);
+    let cancelled = false;
+    const cached = peekCache(url);
+    setState({ url, data: cached, loading: !cached, error: null });
 
-    fetch(url)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((json) => setData(json))
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+    apiFetch(url)
+      .then((data) => !cancelled && setState({ url, data, loading: false, error: null }))
+      .catch((err) => !cancelled && setState({ url, data: null, loading: false, error: err.message }));
+
+    return () => {
+      cancelled = true;
+    };
   }, [url]);
 
-  return { data, loading, error };
+  // Never hand back data that belongs to a previous URL
+  if (state.url !== url) {
+    return { data: peekCache(url), loading: Boolean(url) && !peekCache(url), error: null };
+  }
+  return { data: state.data, loading: state.loading, error: state.error };
 }

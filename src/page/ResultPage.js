@@ -1,5 +1,7 @@
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useFetch from "../hooks/useFetch";
+import { apiFetch } from "../utils/api";
 import GPCarousel from "../composant/GPCarousel";
 import PageHeader from "../composant/PageHeader";
 import ViewToggle from "../composant/ViewToggle";
@@ -63,11 +65,7 @@ export default function ResultPage() {
     async function fetchJsonWithRetry(url, retries = 2, delayMs = 300) {
       for (let attempt = 0; attempt <= retries; attempt += 1) {
         try {
-          const res = await fetch(url);
-          if (!res.ok) {
-            throw new Error(`HTTP ${res.status}`);
-          }
-          return await res.json();
+          return await apiFetch(url);
         } catch (error) {
           if (attempt === retries) {
             throw error;
@@ -397,7 +395,9 @@ export default function ResultPage() {
                 Manche {selectedRound} · {sessionView === "sprint" ? "Sprint" : "Course"}
               </p>
               <h2 className="font-display text-2xl font-bold uppercase tracking-tight text-ink sm:text-3xl md:text-4xl">
-                {selectedRace?.raceName}
+                <Link to={`/tracks/${selectedRace?.Circuit?.circuitId}`} className="hover:text-accent">
+                  {selectedRace?.raceName}
+                </Link>
               </h2>
             </div>
             {sessionView !== "sprint" && winner && (

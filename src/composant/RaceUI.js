@@ -1,4 +1,5 @@
 // Shared building blocks for the "timing tower" look used across pages.
+import { Link } from "react-router-dom";
 import { AlertTriangle, Flag } from "lucide-react";
 import { getFlagImg } from "../utils/flags";
 import { constructorColor } from "../utils/teams";
@@ -44,19 +45,23 @@ export function FlagImg({ nationality, className = "" }) {
   );
 }
 
-export function DriverName({ driver, constructor, showFlag = true }) {
+export function DriverName({ driver, constructor, showFlag = true, link = true }) {
   if (!driver) return null;
+  const Wrapper = link ? Link : "span";
+  const wrapperProps = link
+    ? { to: `/drivers/${driver.driverId}`, className: "group/driver flex min-w-0 items-center gap-3" }
+    : { className: "flex min-w-0 items-center gap-3" };
   return (
-    <span className="flex min-w-0 items-center gap-3">
+    <Wrapper {...wrapperProps}>
       {constructor !== undefined && <TeamStripe constructor={constructor} />}
       {showFlag && <FlagImg nationality={driver.nationality} className="hidden sm:block" />}
       <span className="min-w-0 truncate leading-tight">
         <span className="hidden text-muted sm:inline">{driver.givenName} </span>
-        <span className="font-display text-[1.05rem] font-bold uppercase tracking-wide text-ink">
+        <span className="font-display text-[1.05rem] font-bold uppercase tracking-wide text-ink transition-colors group-hover/driver:text-accent">
           {driver.familyName}
         </span>
       </span>
-    </span>
+    </Wrapper>
   );
 }
 

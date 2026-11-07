@@ -1,5 +1,6 @@
 import useFetch from "../hooks/useFetch";
 import { getFlagImg } from "../utils/flags";
+import { Link } from "react-router-dom";
 import { useSeason } from "../context/SeasonContext";
 import PageHeader from "../composant/PageHeader";
 import { Loading, Notice } from "../composant/RaceUI";
@@ -38,9 +39,10 @@ export default function CircuitPage() {
             const d = raceDate(race);
 
             return (
-              <li
-                key={race.round}
-                className={`group relative flex overflow-hidden rounded-xl border transition-colors animate-rise ${
+              <li key={race.round}>
+                <Link
+                to={`/tracks/${race.Circuit.circuitId}`}
+                className={`group relative flex h-full overflow-hidden rounded-xl border transition-colors animate-rise ${
                   isNext
                     ? "border-accent bg-accent/[0.06]"
                     : "border-line bg-surface hover:border-ink/30"
@@ -80,6 +82,7 @@ export default function CircuitPage() {
                     <span className="truncate">{race.Circuit.circuitName}</span>
                   </p>
                 </div>
+                </Link>
               </li>
             );
           })}

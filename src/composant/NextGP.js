@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { formatInTimeZone } from "date-fns-tz";
 import { fr } from "date-fns/locale";
@@ -89,7 +90,10 @@ function NextRaceHero({ race }) {
           </h2>
           <p className="mt-4 flex items-center gap-2 text-white/85">
             {flag && <img src={flag} alt="" className="h-3.5 w-5 rounded-[2px] object-cover" />}
-            {race.Circuit.circuitName} · {race.Circuit.Location.locality ?? country}
+            <Link to={`/tracks/${race.Circuit.circuitId}`} className="underline decoration-white/40 underline-offset-4 hover:decoration-white">
+              {race.Circuit.circuitName}
+            </Link>
+            · {race.Circuit.Location.locality ?? country}
           </p>
           <div className="mt-auto pt-6 sm:pt-8">
             <p className="mb-2 font-display text-xs uppercase tracking-[0.2em] text-white/70">Départ dans</p>
@@ -123,7 +127,11 @@ function NextRaceHero({ race }) {
 function UpcomingCard({ race }) {
   const country = race.Circuit.Location.country;
   return (
-    <li className="panel group flex min-w-[14rem] flex-1 snap-start flex-col gap-3 p-4 transition-colors hover:border-ink/30">
+    <li className="flex min-w-[14rem] flex-1 snap-start">
+      <Link
+        to={`/tracks/${race.Circuit.circuitId}`}
+        className="panel group flex w-full flex-col gap-3 p-4 transition-colors hover:border-ink/30"
+      >
       <div className="flex items-center justify-between">
         <span className="kicker text-[0.7rem]">R{race.round}</span>
         {race.Sprint && <span className="tag bg-ink text-canvas">Sprint</span>}
@@ -140,6 +148,7 @@ function UpcomingCard({ race }) {
       <p className="num mt-auto text-sm text-ink">
         {fmt(race, "d MMM")} · <span className="text-muted">{race.time ? fmt(race, "HH:mm") : "—"}</span>
       </p>
+      </Link>
     </li>
   );
 }
