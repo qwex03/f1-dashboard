@@ -26,11 +26,11 @@ function EquipesPage() {
   const [evolutionTeamNames, setEvolutionTeamNames] = useState({});
 
 
-  const { data: constructorsData, loading: loadingTeams, error: errorTeams } = useFetch(
+  const { data: constructorsData, loading: loadingTeams, error: errorTeams, retry: retryTeams } = useFetch(
     `https://api.jolpi.ca/ergast/f1/${season}/constructors/`
   );
 
-  const { data: standingsData, loading: loadingStandings, error: errorStandings } = useFetch(
+  const { data: standingsData, loading: loadingStandings, error: errorStandings, retry: retryStandings } = useFetch(
     `https://api.jolpi.ca/ergast/f1/${season}/constructorStandings/`
   );
 
@@ -40,20 +40,6 @@ function EquipesPage() {
 
   useEffect(() => {
     let cancelled = false;
-
-    async function fetchJsonWithRetry(url, retries = 2, delayMs = 300) {
-      for (let attempt = 0; attempt <= retries; attempt += 1) {
-        try {
-          return await apiFetch(url);
-        } catch (error) {
-          if (attempt === retries) {
-            throw error;
-          }
-          await new Promise((resolve) => setTimeout(resolve, delayMs * (attempt + 1)));
-        }
-      }
-      throw new Error("Unknown fetch error");
-    }
 
     async function fetchEvolution() {
       try {
@@ -70,12 +56,14 @@ function EquipesPage() {
         const teamsSet = new Set();
         const teamNamesById = {};
 
+        // All rounds go out together; the API layer paces them at 4 req/s
+        const rounds = Array.from({ length: maxRound }, (_, i) => i + 1);
+        const responses = await Promise.all(
+          rounds.map((round) => apiFetch(`https://api.jolpi.ca/ergast/f1/${season}/${round}/constructorStandings/`))
+        );
+
         for (let round = 1; round <= maxRound; round += 1) {
-          const json = await fetchJsonWithRetry(
-            `https://api.jolpi.ca/ergast/f1/${season}/${round}/constructorStandings/`,
-            4,
-            400
-          );
+          const json = responses[round - 1];
           const constructorStandings =
             json?.MRData?.StandingsTable?.StandingsLists?.[0]?.ConstructorStandings ?? [];
           if (constructorStandings.length === 0) {
@@ -96,7 +84,6 @@ function EquipesPage() {
           });
           roundRows.set(round, row);
 
-          await new Promise((resolve) => setTimeout(resolve, 120));
         }
 
         if (roundRows.size === 0) {
@@ -179,7 +166,15 @@ function EquipesPage() {
       {loading ? (
         <Loading rows={10} />
       ) : error ? (
-        <Notice tone="error">Erreur : {error}</Notice>
+        <Notice
+          tone="error"
+          onRetry={() => {
+            if (errorTeams) retryTeams();
+            if (errorStandings) retryStandings();
+          }}
+        >
+          Erreur : {error}
+        </Notice>
       ) : view === "constructeurs" ? (
         <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {equipes.map((team, i) => (

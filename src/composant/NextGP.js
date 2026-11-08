@@ -154,7 +154,7 @@ function UpcomingCard({ race }) {
 }
 
 export default function NextGP() {
-  const { data, loading, error } = useFetch("https://api.jolpi.ca/ergast/f1/current/races/");
+  const { data, loading, error, retry } = useFetch("https://api.jolpi.ca/ergast/f1/current/races/");
 
   const upcoming = useMemo(() => {
     const races = data?.MRData?.RaceTable?.Races || [];
@@ -164,7 +164,7 @@ export default function NextGP() {
   }, [data]);
 
   if (loading) return <Loading rows={4} />;
-  if (error) return <Notice tone="error">Impossible de charger le calendrier : {error}</Notice>;
+  if (error) return <Notice tone="error" onRetry={retry}>Impossible de charger le calendrier : {error}</Notice>;
   if (!upcoming.length) return <Notice>La saison est terminée — rendez-vous l'an prochain.</Notice>;
 
   const [next, ...rest] = upcoming;

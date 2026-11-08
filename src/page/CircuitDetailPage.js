@@ -142,7 +142,9 @@ export default function CircuitDetailPage() {
     return (
       <div>
         <BackLink to="/tracks">Tous les circuits</BackLink>
-        <Notice tone="error">{circuitReq.error ? `Erreur : ${circuitReq.error}` : "Circuit introuvable."}</Notice>
+        <Notice tone="error" onRetry={circuitReq.error ? circuitReq.retry : undefined}>
+          {circuitReq.error ? `Erreur : ${circuitReq.error}` : "Circuit introuvable."}
+        </Notice>
       </div>
     );
   }
@@ -216,7 +218,9 @@ export default function CircuitDetailPage() {
           {winnersReq.loading ? (
             <Loading rows={8} />
           ) : winnersReq.error ? (
-            <Notice tone="error">Impossible de charger le palmarès : {winnersReq.error}</Notice>
+            <Notice tone="error" onRetry={winnersReq.retry}>
+              Impossible de charger le palmarès : {winnersReq.error}
+            </Notice>
           ) : winners.length === 0 ? (
             <Notice>Aucun Grand Prix n'a encore été couru sur ce circuit.</Notice>
           ) : (

@@ -68,7 +68,7 @@ function SeasonSection({ driverId, season }) {
   const color = constructorColor(team);
 
   if (resultsReq.loading || standingReq.loading) return <Loading rows={6} />;
-  if (resultsReq.error) return <Notice tone="error">Impossible de charger la saison : {resultsReq.error}</Notice>;
+  if (resultsReq.error) return <Notice tone="error" onRetry={resultsReq.retry}>Impossible de charger la saison : {resultsReq.error}</Notice>;
   if (!races.length) return <Notice>Aucun résultat en course pour la saison {season}.</Notice>;
 
   const rows = races.map((race) => {
@@ -193,7 +193,7 @@ function SeasonSection({ driverId, season }) {
 export default function PiloteDetailPage() {
   const { driverId } = useParams();
   const { season } = useSeason();
-  const { data, loading, error } = useFetch(`${API}/drivers/${driverId}/`);
+  const { data, loading, error, retry } = useFetch(`${API}/drivers/${driverId}/`);
   const standingReq = useFetch(`${API}/${season}/drivers/${driverId}/driverStandings/`);
 
   const driver = data?.MRData?.DriverTable?.Drivers?.[0];
@@ -206,7 +206,9 @@ export default function PiloteDetailPage() {
     return (
       <div>
         <BackLink to="/drivers">Tous les pilotes</BackLink>
-        <Notice tone="error">{error ? `Erreur : ${error}` : "Pilote introuvable."}</Notice>
+        <Notice tone="error" onRetry={error ? retry : undefined}>
+          {error ? `Erreur : ${error}` : "Pilote introuvable."}
+        </Notice>
       </div>
     );
   }

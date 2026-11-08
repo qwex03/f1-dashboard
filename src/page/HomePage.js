@@ -7,7 +7,7 @@ import { useSeason } from "../context/SeasonContext";
 
 export default function HomePage() {
   const { season } = useSeason();
-  const { data, loading, error } = useFetch(
+  const { data, loading, error, retry } = useFetch(
     `https://api.jolpi.ca/ergast/f1/${season}/driverstandings/`
   );
 
@@ -28,7 +28,7 @@ export default function HomePage() {
       {loading ? (
         <Loading rows={3} />
       ) : error ? (
-        <Notice tone="error">Impossible de charger le classement : {error}</Notice>
+        <Notice tone="error" onRetry={retry}>Impossible de charger le classement : {error}</Notice>
       ) : (
         <Top3Podium
           top3={top3}

@@ -1,7 +1,12 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { apiFetch, peekCache } from "../utils/api";
 
-export default function useFetch(url) {
+/**
+ * Fetch JSON through the shared cached / rate-limited / retrying layer.
+ * Returns { data, loading, error, retry }.
+ */
+export default function useFetch(url, options) {
+  const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState(() => {
     const cached = peekCache(url);
     return { url, data: cached, loading: Boolean(url) && !cached, error: null };
@@ -14,21 +19,26 @@ export default function useFetch(url) {
     }
 
     let cancelled = false;
-    const cached = peekCache(url);
+    const cached = attempt ? null : peekCache(url);
     setState({ url, data: cached, loading: !cached, error: null });
 
-    apiFetch(url)
+    apiFetch(url, { ...options, force: attempt > 0 })
       .then((data) => !cancelled && setState({ url, data, loading: false, error: null }))
       .catch((err) => !cancelled && setState({ url, data: null, loading: false, error: err.message }));
 
     return () => {
       cancelled = true;
     };
-  }, [url]);
+    // options is expected to be stable (module-level constant)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [url, attempt]);
+
+  const retry = useCallback(() => setAttempt((n) => n + 1), []);
 
   // Never hand back data that belongs to a previous URL
   if (state.url !== url) {
-    return { data: peekCache(url), loading: Boolean(url) && !peekCache(url), error: null };
+    const cached = peekCache(url);
+    return { data: cached, loading: Boolean(url) && !cached, error: null, retry };
   }
-  return { data: state.data, loading: state.loading, error: state.error };
+  return { ...state, retry };
 }

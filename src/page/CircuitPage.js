@@ -11,7 +11,7 @@ function raceDate(r) {
 
 export default function CircuitPage() {
   const { season } = useSeason();
-  const { data, loading, error } = useFetch(`https://api.jolpi.ca/ergast/f1/${season}/races/`);
+  const { data, loading, error, retry } = useFetch(`https://api.jolpi.ca/ergast/f1/${season}/races/`);
 
   const races = data?.MRData?.RaceTable?.Races ?? [];
   const now = Date.now();
@@ -28,7 +28,7 @@ export default function CircuitPage() {
       {loading ? (
         <Loading rows={10} />
       ) : error ? (
-        <Notice tone="error">Erreur : {error}</Notice>
+        <Notice tone="error" onRetry={retry}>Erreur : {error}</Notice>
       ) : (
         <ol className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {races.map((race, i) => {

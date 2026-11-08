@@ -62,20 +62,6 @@ export default function ResultPage() {
   useEffect(() => {
     let cancelled = false;
 
-    async function fetchJsonWithRetry(url, retries = 2, delayMs = 300) {
-      for (let attempt = 0; attempt <= retries; attempt += 1) {
-        try {
-          return await apiFetch(url);
-        } catch (error) {
-          if (attempt === retries) {
-            throw error;
-          }
-          await new Promise((resolve) => setTimeout(resolve, delayMs * (attempt + 1)));
-        }
-      }
-      throw new Error("Unknown fetch error");
-    }
-
     async function fetchPaginatedRaces(urlPath, resultKey) {
       const pageSize = 100;
       let offset = 0;
@@ -83,9 +69,7 @@ export default function ResultPage() {
       const racesByRound = new Map();
 
       while (offset < total) {
-        const json = await fetchJsonWithRetry(
-          `https://api.jolpi.ca/ergast/f1/${season}/${urlPath}.json?limit=${pageSize}&offset=${offset}`
-        );
+        const json = await apiFetch(`https://api.jolpi.ca/ergast/f1/${season}/${urlPath}.json?limit=${pageSize}&offset=${offset}`);
         const mrData = json?.MRData ?? {};
         const pageRaces = mrData?.RaceTable?.Races ?? [];
         total = Number(mrData.total ?? 0);
@@ -305,7 +289,7 @@ export default function ResultPage() {
         (globalLoading ? (
           <Loading rows={12} label="Chargement de la vue globale" />
         ) : globalError ? (
-          <Notice tone="error">Erreur : {globalError}</Notice>
+          <Notice tone="error" onRetry={() => window.location.reload()}>Erreur : {globalError}</Notice>
         ) : driverIds.length === 0 ? (
           <Notice>La saison n'a pas encore commencé. Les points apparaîtront après les premières courses.</Notice>
         ) : (
@@ -376,7 +360,7 @@ export default function ResultPage() {
         (loadingRaces ? (
           <Loading rows={2} />
         ) : errorRaces ? (
-          <Notice tone="error">Erreur : {errorRaces}</Notice>
+          <Notice tone="error" onRetry={() => window.location.reload()}>Erreur : {errorRaces}</Notice>
         ) : (
           <GPCarousel
             rounds={races}
@@ -413,7 +397,7 @@ export default function ResultPage() {
           {loadingResults ? (
             <Loading rows={10} />
           ) : errorResults ? (
-            <Notice tone="error">Erreur : {errorResults}</Notice>
+            <Notice tone="error" onRetry={() => window.location.reload()}>Erreur : {errorResults}</Notice>
           ) : sessionView === "sprint" && hasSprintWeekend ? (
             loadingSprint ? (
               <Loading rows={8} />

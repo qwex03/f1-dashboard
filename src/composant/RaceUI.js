@@ -1,6 +1,6 @@
 // Shared building blocks for the "timing tower" look used across pages.
 import { Link } from "react-router-dom";
-import { AlertTriangle, Flag } from "lucide-react";
+import { AlertTriangle, Flag, RotateCw } from "lucide-react";
 import { getFlagImg } from "../utils/flags";
 import { constructorColor } from "../utils/teams";
 import TeamImageWithFallback from "./TeamImageWithFallback";
@@ -97,16 +97,23 @@ export function Loading({ rows = 8, label = "Chargement…" }) {
   );
 }
 
-export function Notice({ tone = "info", children }) {
+export function Notice({ tone = "info", children, onRetry }) {
   const Icon = tone === "error" ? AlertTriangle : Flag;
   return (
     <div
-      className={`panel flex items-center gap-3 px-5 py-6 text-sm ${
+      role={tone === "error" ? "alert" : undefined}
+      className={`panel flex flex-wrap items-center gap-3 px-5 py-6 text-sm ${
         tone === "error" ? "border-accent/40 text-accent" : "text-muted"
       }`}
     >
       <Icon size={18} className="shrink-0" />
-      <p>{children}</p>
+      <p className="min-w-0 flex-1">{children}</p>
+      {onRetry && (
+        <button onClick={onRetry} className="btn-ghost h-9 text-xs">
+          <RotateCw size={14} />
+          Réessayer
+        </button>
+      )}
     </div>
   );
 }

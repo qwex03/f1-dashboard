@@ -1,33 +1,17 @@
-import { useState, useEffect } from "react";
+import useFetch from "./useFetch";
+
+// rss2json answers 200 with { status: "error" } on failure: treat that as an error
+// so it is retried and never cached.
+const RSS_OPTIONS = {
+  validate(json) {
+    if (json?.status !== "ok") throw new Error(json?.message || "Flux RSS indisponible");
+  },
+};
 
 export default function useRssFeed(url) {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    async function fetchFeed() {
-      try {
-        const res = await fetch(
-          `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}&api_key=cgghbbjnpdofxcpe2rzv8iyempygkanabi843xtn&count=25`
-        );
-        const data = await res.json();
-
-        if (data.status === "ok") {
-          console.log(`Nombre d'items: ${data.items.length}`);
-          setItems(data.items);
-        } else {
-          setError("Erreur lors de la récupération du RSS");
-        }
-      } catch (e) {
-        setError(e.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchFeed();
-  }, [url]);
-
-  return { items, loading, error };
+  const feedUrl = url
+    ? `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}&api_key=cgghbbjnpdofxcpe2rzv8iyempygkanabi843xtn&count=25`
+    : null;
+  const { data, loading, error, retry } = useFetch(feedUrl, RSS_OPTIONS);
+  return { items: data?.items ?? [], loading, error, retry };
 }
