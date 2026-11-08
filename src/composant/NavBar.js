@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import ThemeToggle from "./ThemeToggle";
 import SeasonSelector from "./SeasonSelector";
+import { InstallButton } from "./PwaUI";
 import {
   PanelLeftClose,
   PanelLeftOpen,
@@ -105,6 +106,7 @@ export default function Navbar({ collapsed, setCollapsed }) {
         {!collapsed && <p className="kicker mb-1 px-1 text-[0.7rem]">Réglages</p>}
         <SeasonSelector collapsed={collapsed} />
         <ThemeToggle collapsed={collapsed} />
+        <InstallButton collapsed={collapsed} />
       </div>
     </nav>
   );

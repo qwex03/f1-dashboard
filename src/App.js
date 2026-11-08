@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import Navbar from "./composant/NavBar";
 import MobileNav from "./composant/MobileNav";
+import { OfflineBanner, UpdateToast } from "./composant/PwaUI";
 import EquipesPage from "./page/EquipesPage";
 import PilotesPage from "./page/PilotesPage";
 import CircuitPage from "./page/CircuitPage";
@@ -37,6 +38,7 @@ function Layout({ collapsed, setCollapsed }) {
           key={location.pathname}
           className={isFullScreenPage ? "" : "mx-auto max-w-[1400px] px-4 py-6 sm:px-6 md:px-10 md:py-10"}
         >
+          {!isFullScreenPage && <OfflineBanner />}
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/drivers" element={<PilotesPage />} />
@@ -50,6 +52,7 @@ function Layout({ collapsed, setCollapsed }) {
           </Routes>
         </div>
       </main>
+      <UpdateToast />
     </>
   );
 }
