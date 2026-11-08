@@ -23,7 +23,7 @@ export default function MobileNav() {
     return () => (document.body.style.overflow = "");
   }, [open]);
 
-  const inDrawer = !TABS.includes(location.pathname);
+  const inDrawer = !TABS.some((t) => (t === "/" ? location.pathname === "/" : location.pathname.startsWith(t)));
 
   return (
     <div className="md:hidden">

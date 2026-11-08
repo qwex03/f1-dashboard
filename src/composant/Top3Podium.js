@@ -17,8 +17,9 @@ function PodiumCard({ standing, leaderPoints }) {
   const gap = Number(leaderPoints) - Number(points);
 
   return (
-    <article
-      className={`group relative w-[78%] shrink-0 snap-center overflow-hidden rounded-xl border border-line bg-surface md:w-auto ${ORDER[position]} ${
+    <Link
+      to={`/drivers/${driver.driverId}`}
+      className={`group relative block w-[78%] shrink-0 snap-center overflow-hidden rounded-xl border border-line bg-surface md:w-auto ${ORDER[position]} ${
         isFirst ? "md:-mt-6" : ""
       } animate-rise`}
       style={{ animationDelay: `${Number(position) * 80}ms` }}
@@ -80,7 +81,7 @@ function PodiumCard({ standing, leaderPoints }) {
           <span className="num text-muted">{isFirst ? "Leader" : `−${gap}`}</span>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }
 

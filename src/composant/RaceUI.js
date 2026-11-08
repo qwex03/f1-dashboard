@@ -1,5 +1,6 @@
 // Shared building blocks for the "timing tower" look used across pages.
-import { AlertTriangle, Flag } from "lucide-react";
+import { Link } from "react-router-dom";
+import { AlertTriangle, Flag, RotateCw } from "lucide-react";
 import { getFlagImg } from "../utils/flags";
 import { constructorColor } from "../utils/teams";
 import TeamImageWithFallback from "./TeamImageWithFallback";
@@ -44,19 +45,23 @@ export function FlagImg({ nationality, className = "" }) {
   );
 }
 
-export function DriverName({ driver, constructor, showFlag = true }) {
+export function DriverName({ driver, constructor, showFlag = true, link = true }) {
   if (!driver) return null;
+  const Wrapper = link ? Link : "span";
+  const wrapperProps = link
+    ? { to: `/drivers/${driver.driverId}`, className: "group/driver flex min-w-0 items-center gap-3" }
+    : { className: "flex min-w-0 items-center gap-3" };
   return (
-    <span className="flex min-w-0 items-center gap-3">
+    <Wrapper {...wrapperProps}>
       {constructor !== undefined && <TeamStripe constructor={constructor} />}
       {showFlag && <FlagImg nationality={driver.nationality} className="hidden sm:block" />}
       <span className="min-w-0 truncate leading-tight">
         <span className="hidden text-muted sm:inline">{driver.givenName} </span>
-        <span className="font-display text-[1.05rem] font-bold uppercase tracking-wide text-ink">
+        <span className="font-display text-[1.05rem] font-bold uppercase tracking-wide text-ink transition-colors group-hover/driver:text-accent">
           {driver.familyName}
         </span>
       </span>
-    </span>
+    </Wrapper>
   );
 }
 
@@ -92,16 +97,23 @@ export function Loading({ rows = 8, label = "Chargement…" }) {
   );
 }
 
-export function Notice({ tone = "info", children }) {
+export function Notice({ tone = "info", children, onRetry }) {
   const Icon = tone === "error" ? AlertTriangle : Flag;
   return (
     <div
-      className={`panel flex items-center gap-3 px-5 py-6 text-sm ${
+      role={tone === "error" ? "alert" : undefined}
+      className={`panel flex flex-wrap items-center gap-3 px-5 py-6 text-sm ${
         tone === "error" ? "border-accent/40 text-accent" : "text-muted"
       }`}
     >
       <Icon size={18} className="shrink-0" />
-      <p>{children}</p>
+      <p className="min-w-0 flex-1">{children}</p>
+      {onRetry && (
+        <button onClick={onRetry} className="btn-ghost h-9 text-xs">
+          <RotateCw size={14} />
+          Réessayer
+        </button>
+      )}
     </div>
   );
 }

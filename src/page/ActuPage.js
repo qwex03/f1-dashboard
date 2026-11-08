@@ -26,7 +26,7 @@ function CardsSkeleton() {
 
 export default function ActuPage() {
   const [currentPage, setCurrentPage] = useState(1);
-  const { items: articles, loading, error } = useRssFeed("https://fr.motorsport.com/rss/f1/news/");
+  const { items: articles, loading, error, retry } = useRssFeed("https://fr.motorsport.com/rss/f1/news/");
 
   const totalPages = Math.ceil(articles.length / PER_PAGE);
   const start = (currentPage - 1) * PER_PAGE;
@@ -43,7 +43,7 @@ export default function ActuPage() {
       {loading ? (
         <CardsSkeleton />
       ) : error ? (
-        <Notice tone="error">Impossible de charger les actualités : {error}</Notice>
+        <Notice tone="error" onRetry={retry}>Impossible de charger les actualités : {error}</Notice>
       ) : (
         <>
           <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

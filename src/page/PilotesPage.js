@@ -144,7 +144,15 @@ export default function PilotesPage() {
       {loading ? (
         <Loading />
       ) : error ? (
-        <Notice tone="error">Erreur : {error}</Notice>
+        <Notice
+          tone="error"
+          onRetry={() => {
+            if (pilotesReq.error) pilotesReq.retry();
+            if (classementReq.error) classementReq.retry();
+          }}
+        >
+          Erreur : {error}
+        </Notice>
       ) : view === "pilotes" ? (
         <DriversTable pilotes={pilotes} />
       ) : view === "classement" ? (
