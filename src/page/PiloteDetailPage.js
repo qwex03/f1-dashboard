@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import { Swords } from "lucide-react";
 import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import useFetch from "../hooks/useFetch";
 import useWikiSummary from "../hooks/useWikiSummary";
@@ -289,6 +290,10 @@ export default function PiloteDetailPage() {
                   </div>
                 )}
               </dl>
+              <Link to={`/compare?a=${driverId}`} className="btn-ghost mt-5 h-10 w-fit">
+                <Swords size={16} />
+                Comparer avec un autre pilote
+              </Link>
             </div>
           </div>
         </header>

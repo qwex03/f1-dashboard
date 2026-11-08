@@ -13,6 +13,7 @@ import CalendrierPage from "./page/3DCalendrierPage";
 import PiloteDetailPage from "./page/PiloteDetailPage";
 import CircuitDetailPage from "./page/CircuitDetailPage";
 import EcurieDetailPage from "./page/EcurieDetailPage";
+import ComparePage from "./page/ComparePage";
 
 function Layout({ collapsed, setCollapsed }) {
   const location = useLocation();
@@ -44,6 +45,7 @@ function Layout({ collapsed, setCollapsed }) {
             <Route path="/" element={<HomePage />} />
             <Route path="/drivers" element={<PilotesPage />} />
             <Route path="/drivers/:driverId" element={<PiloteDetailPage />} />
+            <Route path="/compare" element={<ComparePage />} />
             <Route path="/teams" element={<EquipesPage />} />
             <Route path="/teams/:constructorId" element={<EcurieDetailPage />} />
             <Route path="/tracks" element={<CircuitPage />} />

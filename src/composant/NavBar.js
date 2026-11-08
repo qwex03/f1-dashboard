@@ -12,11 +12,13 @@ import {
   NewspaperIcon,
   FlagIcon,
   EarthIcon,
+  Swords,
 } from "lucide-react";
 
 export const LINKS = [
   { to: "/", label: "Accueil", icon: Gauge },
   { to: "/drivers", label: "Pilotes", icon: UserIcon },
+  { to: "/compare", label: "Duel", icon: Swords },
   { to: "/teams", label: "Équipes", icon: UsersIcon },
   { to: "/results", label: "Résultats", icon: FlagIcon },
   { to: "/tracks", label: "Circuits", icon: MapPinIcon },
