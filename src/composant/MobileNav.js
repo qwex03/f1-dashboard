@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import { LINKS, Logo } from "./NavBar";
 import SeasonSelector from "./SeasonSelector";
 import ThemeToggle from "./ThemeToggle";
+import { InstallButton } from "./PwaUI";
 import { useSeason } from "../context/SeasonContext";
 
 // The four destinations that get a permanent slot in the bottom tab bar.
@@ -133,6 +134,7 @@ export default function MobileNav() {
           <p className="kicker mb-1">Réglages</p>
           <SeasonSelector />
           <ThemeToggle />
+          <InstallButton />
         </div>
       </aside>
     </div>
