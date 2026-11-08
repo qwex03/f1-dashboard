@@ -281,7 +281,11 @@ export default function PiloteDetailPage() {
                 {team && (
                   <div className="flex gap-1.5">
                     <dt className="text-muted">Écurie {season}</dt>
-                    <dd className="font-semibold text-ink">{team.name}</dd>
+                    <dd>
+                      <Link to={`/teams/${team.constructorId}`} className="font-semibold text-ink hover:text-accent">
+                        {team.name}
+                      </Link>
+                    </dd>
                   </div>
                 )}
               </dl>

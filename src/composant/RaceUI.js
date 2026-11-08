@@ -65,16 +65,23 @@ export function DriverName({ driver, constructor, showFlag = true, link = true }
   );
 }
 
-export function TeamName({ constructor, withLogo = true }) {
+export function TeamName({ constructor, withLogo = true, link = true }) {
   if (!constructor) return null;
+  const canLink = link && constructor.constructorId;
+  const Wrapper = canLink ? Link : "span";
+  const wrapperProps = canLink
+    ? { to: `/teams/${constructor.constructorId}`, className: "group/team flex min-w-0 items-center gap-3" }
+    : { className: "flex min-w-0 items-center gap-3" };
   return (
-    <span className="flex min-w-0 items-center gap-3">
+    <Wrapper {...wrapperProps}>
       <TeamStripe constructor={constructor} />
       {withLogo && (
         <TeamImageWithFallback teamName={constructor.name} className="h-6 w-6 shrink-0 object-contain sm:h-7 sm:w-7" />
       )}
-      <span className="truncate font-semibold text-ink">{constructor.name}</span>
-    </span>
+      <span className="truncate font-semibold text-ink transition-colors group-hover/team:text-accent">
+        {constructor.name}
+      </span>
+    </Wrapper>
   );
 }
 
