@@ -99,6 +99,15 @@ function CalendrierPage() {
     );
   };
 
+  // Keep the camera between close to the surface and a full view of the Earth
+  // (globe radius = 100): no zooming out into the star field.
+  useEffect(() => {
+    const controls = globeRef.current?.controls();
+    if (!controls) return;
+    controls.minDistance = 130;
+    controls.maxDistance = 380;
+  }, []);
+
   useEffect(() => {
     if (!globeRef.current) return undefined;
 
