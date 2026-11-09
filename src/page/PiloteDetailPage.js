@@ -4,6 +4,7 @@ import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 
 import useFetch from "../hooks/useFetch";
 import useWikiSummary from "../hooks/useWikiSummary";
 import { useSeason } from "../context/SeasonContext";
+import useCarNumbers from "../hooks/useCarNumbers";
 import { API } from "../utils/api";
 import { constructorColor, readableOn } from "../utils/teams";
 import DriverImageWithFallback from "../composant/DriverImageWithFallback";
@@ -194,10 +195,12 @@ function SeasonSection({ driverId, season }) {
 export default function PiloteDetailPage() {
   const { driverId } = useParams();
   const { season } = useSeason();
+  const numberOf = useCarNumbers(season);
   const { data, loading, error, retry } = useFetch(`${API}/drivers/${driverId}/`);
   const standingReq = useFetch(`${API}/${season}/drivers/${driverId}/driverStandings/`);
 
   const driver = data?.MRData?.DriverTable?.Drivers?.[0];
+  const carNumber = numberOf(driver);
   const team = standingReq.data?.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings?.[0]?.Constructors?.slice(-1)[0];
   const color = constructorColor(team);
   const wiki = useWikiSummary(driver?.url);
@@ -228,12 +231,12 @@ export default function PiloteDetailPage() {
             style={{ background: `linear-gradient(115deg, ${color} 0%, transparent 60%)` }}
           />
           <div className="absolute inset-x-0 top-0 h-1" style={{ backgroundColor: color }} />
-          {driver.permanentNumber && (
+          {carNumber && (
             <span
               aria-hidden
               className="pointer-events-none absolute -bottom-10 right-2 font-display text-[10rem] font-extrabold italic leading-none text-ink/[0.07] sm:text-[16rem]"
             >
-              {driver.permanentNumber}
+              {carNumber}
             </span>
           )}
 
@@ -250,9 +253,9 @@ export default function PiloteDetailPage() {
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 {driver.code && <span className="tag bg-ink text-canvas">{driver.code}</span>}
-                {driver.permanentNumber && (
+                {carNumber && (
                   <span className="tag" style={{ backgroundColor: color, color: readableOn(color) }}>
-                    #{driver.permanentNumber}
+                    #{carNumber}
                   </span>
                 )}
               </div>

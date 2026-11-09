@@ -1,6 +1,7 @@
 import { useState } from "react";
 import useFetch from "../hooks/useFetch";
 import { useSeason } from "../context/SeasonContext";
+import useCarNumbers from "../hooks/useCarNumbers";
 import PageHeader from "../composant/PageHeader";
 import DriversEvolution from "../composant/DriversEvolution";
 import ViewToggle from "../composant/ViewToggle";
@@ -16,7 +17,7 @@ function age(dob) {
   return a;
 }
 
-function DriversTable({ pilotes }) {
+function DriversTable({ pilotes, numberOf }) {
   return (
     <TableCard>
       <div className="overflow-x-auto">
@@ -32,7 +33,7 @@ function DriversTable({ pilotes }) {
           <tbody>
             {pilotes.map((p) => (
               <tr key={p.driverId}>
-                <td className="num text-muted">{p.permanentNumber ?? "—"}</td>
+                <td className="num text-muted">{numberOf(p) ?? "—"}</td>
                 <td>
                   <DriverName driver={p} showFlag={false} />
                   {p.code && <span className="num ml-2 text-xs text-faint">{p.code}</span>}
@@ -113,6 +114,7 @@ function StandingsTable({ standings }) {
 export default function PilotesPage() {
   const [view, setView] = useState("classement");
   const { season } = useSeason();
+  const numberOf = useCarNumbers(season);
 
   const pilotesReq = useFetch(`https://api.jolpi.ca/ergast/f1/${season}/drivers/`);
   const classementReq = useFetch(`https://api.jolpi.ca/ergast/f1/${season}/driverStandings/`);
@@ -166,7 +168,7 @@ export default function PilotesPage() {
           Erreur : {error}
         </Notice>
       ) : view === "pilotes" ? (
-        <DriversTable pilotes={pilotes} />
+        <DriversTable pilotes={pilotes} numberOf={numberOf} />
       ) : view === "classement" ? (
         standings.length === 0 ? (
           <Notice>La saison n'a pas encore commencé. Le classement apparaîtra après la première course.</Notice>

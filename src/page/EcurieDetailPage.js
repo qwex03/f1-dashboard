@@ -3,6 +3,7 @@ import { Bar, BarChart, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } fro
 import useFetch from "../hooks/useFetch";
 import useWikiSummary from "../hooks/useWikiSummary";
 import { useSeason } from "../context/SeasonContext";
+import useCarNumbers from "../hooks/useCarNumbers";
 import { API } from "../utils/api";
 import { constructorColor } from "../utils/teams";
 import DriverImageWithFallback from "../composant/DriverImageWithFallback";
@@ -57,7 +58,8 @@ function CareerStats({ constructorId }) {
   );
 }
 
-function DriversLineup({ drivers, standings, color }) {
+function DriversLineup({ drivers, standings, color, season }) {
+  const numberOf = useCarNumbers(season);
   if (!drivers.length) return null;
   const byId = new Map(standings.map((s) => [s.Driver.driverId, s]));
 
@@ -84,7 +86,7 @@ function DriversLineup({ drivers, standings, color }) {
               <p className="flex items-center gap-2 text-sm text-muted">
                 <FlagImg nationality={d.nationality} />
                 {d.givenName}
-                {d.permanentNumber && <span className="num text-faint">#{d.permanentNumber}</span>}
+                {numberOf(d) && <span className="num text-faint">#{numberOf(d)}</span>}
               </p>
               <p className="truncate font-display text-2xl font-extrabold uppercase leading-tight tracking-tight text-ink group-hover:text-accent">
                 {d.familyName}
@@ -146,7 +148,7 @@ function SeasonSection({ constructorId, season, color }) {
     <section className="space-y-4">
       <SectionTitle kicker={`Saison ${season}`} title="Pilotes et résultats" />
 
-      <DriversLineup drivers={drivers} standings={driverStandings} color={color} />
+      <DriversLineup drivers={drivers} standings={driverStandings} color={color} season={season} />
 
       <div className="grid grid-cols-3 gap-3">
         <StatTile label="Championnat" value={standing ? `P${standing.position}` : "—"} />

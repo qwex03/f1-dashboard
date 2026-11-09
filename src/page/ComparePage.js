@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { ArrowLeftRight, ChevronDown } from "lucide-react";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import useFetch from "../hooks/useFetch";
+import useCarNumbers from "../hooks/useCarNumbers";
 import { useSeason } from "../context/SeasonContext";
 import { API } from "../utils/api";
 import { constructorColor, readableOn } from "../utils/teams";
@@ -147,7 +148,7 @@ function DriverPicker({ value, onChange, options, label, color }) {
   );
 }
 
-function DriverCard({ driver, team, color, align = "left", standing }) {
+function DriverCard({ driver, team, color, align = "left", standing, number }) {
   const right = align === "right";
   if (!driver) {
     return <div className="panel h-40 animate-pulse sm:h-56" />;
@@ -164,14 +165,14 @@ function DriverCard({ driver, team, color, align = "left", standing }) {
         style={{ background: `linear-gradient(${right ? 245 : 115}deg, ${color} 0%, transparent 65%)` }}
       />
       <div className="absolute inset-x-0 top-0 h-1" style={{ backgroundColor: color }} />
-      {driver.permanentNumber && (
+      {number && (
         <span
           aria-hidden
           className={`pointer-events-none absolute -bottom-6 font-display text-[6rem] font-extrabold italic leading-none text-ink/[0.07] sm:text-[10rem] ${
             right ? "right-2" : "left-2"
           }`}
         >
-          {driver.permanentNumber}
+          {number}
         </span>
       )}
 
@@ -319,6 +320,7 @@ function separate(colorA, colorB) {
 export default function ComparePage() {
   const { season } = useSeason();
   const [params, setParams] = useSearchParams();
+  const numberOf = useCarNumbers(season);
 
   const listReq = useFetch(`${API}/${season}/driverStandings/`);
   const standings = listReq.data?.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings ?? [];
@@ -469,11 +471,11 @@ export default function ComparePage() {
 
         {/* Face to face */}
         <div className="relative flex gap-2 animate-rise sm:gap-4">
-          <DriverCard driver={driverA} team={A.team} color={colorA} standing={sa.championship} />
+          <DriverCard driver={driverA} team={A.team} color={colorA} standing={sa.championship} number={numberOf(driverA)} />
           <span className="absolute left-1/2 top-1/2 z-10 grid h-11 w-11 -translate-x-1/2 -translate-y-1/2 place-items-center bg-accent font-display text-lg font-extrabold italic text-accent-ink [clip-path:polygon(18%_0,100%_0,82%_100%,0_100%)] sm:h-14 sm:w-16 sm:text-2xl">
             VS
           </span>
-          <DriverCard driver={driverB} team={B.team} color={colorB} standing={sb.championship} align="right" />
+          <DriverCard driver={driverB} team={B.team} color={colorB} standing={sb.championship} number={numberOf(driverB)} align="right" />
         </div>
         {sameTeam && (
           <p className="mt-3 text-center text-sm text-muted">
