@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { Bar, BarChart, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import useFetch from "../hooks/useFetch";
 import useWikiSummary from "../hooks/useWikiSummary";
+import { useTitles } from "../utils/champions";
 import { useSeason } from "../context/SeasonContext";
 import useCarNumbers from "../hooks/useCarNumbers";
 import { API } from "../utils/api";
@@ -18,10 +19,10 @@ function CareerStats({ constructorId }) {
   const p2 = useFetch(`${base}/results/2/?limit=1`);
   const p3 = useFetch(`${base}/results/3/?limit=1`);
   const poles = useFetch(`${base}/qualifying/1/?limit=1`);
-  const titles = useFetch(`${base}/constructorStandings/1/?limit=100`);
+  const titles = useTitles("constructor", constructorId);
   const seasons = useFetch(`${base}/seasons/?limit=100`);
 
-  const titleYears = (titles.data?.MRData?.StandingsTable?.StandingsLists ?? []).map((s) => s.season);
+  const titleYears = titles.years;
   const seasonList = (seasons.data?.MRData?.SeasonTable?.Seasons ?? []).map((s) => s.season);
   const podiums =
     [wins, p2, p3].every((r) => r.data) ? total(wins.data) + total(p2.data) + total(p3.data) : undefined;
@@ -32,7 +33,7 @@ function CareerStats({ constructorId }) {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         <StatTile
           label="Titres constructeurs"
-          value={titles.data ? titleYears.length : undefined}
+          value={titleYears.length}
           hint={
             titleYears.length
               ? titleYears.length > 4

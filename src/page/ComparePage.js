@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ArrowLeftRight, ChevronDown } from "lucide-react";
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useTitles } from "../utils/champions";
 import useFetch from "../hooks/useFetch";
 import useCarNumbers from "../hooks/useCarNumbers";
 import { useSeason } from "../context/SeasonContext";
@@ -104,15 +105,15 @@ function useCareer(driverId) {
   const p2 = useFetch(base && `${base}/results/2/?limit=1`);
   const p3 = useFetch(base && `${base}/results/3/?limit=1`);
   const poles = useFetch(base && `${base}/qualifying/1/?limit=1`);
-  const titles = useFetch(base && `${base}/driverStandings/1/?limit=30`);
+  const titles = useTitles("driver", driverId);
   const seasons = useFetch(base && `${base}/seasons/?limit=100`);
 
-  const all = [starts, wins, p2, p3, poles, titles, seasons];
+  const all = [starts, wins, p2, p3, poles, seasons];
   const podiums = [wins, p2, p3].every((r) => r.data) ? total(wins.data) + total(p2.data) + total(p3.data) : undefined;
   return {
     loading: all.some((r) => r.loading),
     stats: {
-      titles: titles.data ? (titles.data.MRData.StandingsTable.StandingsLists ?? []).length : undefined,
+      titles: driverId ? titles.years.length : undefined,
       wins: total(wins.data),
       podiums,
       poles: total(poles.data),
