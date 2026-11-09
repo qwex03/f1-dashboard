@@ -119,9 +119,15 @@ export default function PilotesPage() {
   const loading = pilotesReq.loading || classementReq.loading;
   const error = pilotesReq.error || classementReq.error;
 
-  const pilotes = pilotesReq.data?.MRData?.DriverTable?.Drivers ?? [];
   const standings =
     classementReq.data?.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings ?? [];
+  // The API also lists drivers who only drove an FP1 or a qualifying session.
+  // Keep the ones with a Grand Prix start, i.e. the ones in the championship standings
+  // (before the first race, there are no standings: show the whole entry list).
+  const racers = new Set(standings.map((s) => s.Driver.driverId));
+  const pilotes = (pilotesReq.data?.MRData?.DriverTable?.Drivers ?? []).filter(
+    (d) => racers.size === 0 || racers.has(d.driverId)
+  );
 
   return (
     <div className="pb-16">
