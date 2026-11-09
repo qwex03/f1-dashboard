@@ -7,6 +7,7 @@ import PageHeader from "../composant/PageHeader";
 import ViewToggle from "../composant/ViewToggle";
 import { useSeason } from "../context/SeasonContext";
 import { DriverName, Loading, Notice, Position, TableCard, TeamName } from "../composant/RaceUI";
+import QualifyingTable from "../composant/QualifyingTable";
 
 export default function ResultPage() {
   const [selectedRound, setSelectedRound] = useState(null);
@@ -41,6 +42,17 @@ export default function ResultPage() {
   );
 
   const {
+    data: qualiData,
+    loading: loadingQuali,
+    error: errorQuali,
+    retry: retryQuali,
+  } = useFetch(
+    selectedRound && sessionView === "qualifs"
+      ? `https://api.jolpi.ca/ergast/f1/${season}/${selectedRound}/qualifying.json`
+      : null
+  );
+
+  const {
     data: standingsData,
     loading: loadingStandings,
     error: errorStandings,
@@ -50,6 +62,7 @@ export default function ResultPage() {
   const selectedRace = races.find((r) => r.round === selectedRound);
   const results = resultsData?.MRData?.RaceTable?.Races?.[0]?.Results ?? [];
   const sprintResults = sprintData?.MRData?.RaceTable?.Races?.[0]?.SprintResults ?? [];
+  const qualiResults = qualiData?.MRData?.RaceTable?.Races?.[0]?.QualifyingResults ?? [];
   const [seasonResultRaces, setSeasonResultRaces] = useState([]);
   const [seasonSprintRaces, setSeasonSprintRaces] = useState([]);
   const [loadingSeasonResults, setLoadingSeasonResults] = useState(false);
@@ -205,6 +218,14 @@ export default function ResultPage() {
         });
 
   const hasSprintWeekend = Boolean(selectedRace?.Sprint || sprintResults.length);
+  // A sprint tab only exists on sprint weekends: fall back to the race elsewhere
+  const session = sessionView === "sprint" && !hasSprintWeekend ? "course" : sessionView;
+  const sessions = [
+    ["course", "Course"],
+    ["qualifs", "Qualifications"],
+    ...(hasSprintWeekend ? [["sprint", "Sprint"]] : []),
+  ];
+  const SESSION_LABEL = { course: "Course", qualifs: "Qualifications", sprint: "Sprint" };
 
   const constructorByDriver = new Map(
     standings.map((s) => [s.Driver.driverId, s.Constructors?.[0]])
@@ -366,17 +387,15 @@ export default function ResultPage() {
             rounds={races}
             selectedRound={selectedRound}
             setSelectedRound={setSelectedRound}
-            sessionView={sessionView}
-            setSessionView={setSessionView}
           />
         ))}
 
       {viewMode === "gp" && selectedRound && (
         <section className="mt-6 sm:mt-8">
-          <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="kicker mb-1">
-                Manche {selectedRound} · {sessionView === "sprint" ? "Sprint" : "Course"}
+                Manche {selectedRound} · {SESSION_LABEL[session]}
               </p>
               <h2 className="font-display text-2xl font-bold uppercase tracking-tight text-ink sm:text-3xl md:text-4xl">
                 <Link to={`/tracks/${selectedRace?.Circuit?.circuitId}`} className="hover:text-accent">
@@ -384,21 +403,69 @@ export default function ResultPage() {
                 </Link>
               </h2>
             </div>
-            {sessionView !== "sprint" && winner && (
+            {session === "course" && winner && (
               <p className="text-sm text-muted">
                 Vainqueur ·{" "}
+                <span className="font-display text-lg font-bold uppercase text-ink">{winner.Driver.familyName}</span>
+              </p>
+            )}
+            {session === "qualifs" && qualiResults[0] && (
+              <p className="text-sm text-muted">
+                Pole position ·{" "}
                 <span className="font-display text-lg font-bold uppercase text-ink">
-                  {winner.Driver.familyName}
+                  {qualiResults[0].Driver.familyName}
+                </span>
+              </p>
+            )}
+            {session === "sprint" && sprintResults[0] && (
+              <p className="text-sm text-muted">
+                Vainqueur du sprint ·{" "}
+                <span className="font-display text-lg font-bold uppercase text-ink">
+                  {sprintResults[0].Driver.familyName}
                 </span>
               </p>
             )}
           </div>
 
-          {loadingResults ? (
+          {/* Session picker */}
+          <div role="tablist" aria-label="Session" className="mb-5 inline-flex rounded-lg border border-line bg-surface p-1">
+            {sessions.map(([value, label]) => (
+              <button
+                key={value}
+                role="tab"
+                aria-selected={session === value}
+                onClick={() => setSessionView(value)}
+                className={`h-9 rounded-md px-3 font-display text-sm font-bold uppercase tracking-wide transition-colors sm:px-4 ${
+                  session === value ? "bg-accent text-accent-ink" : "text-muted hover:text-ink"
+                }`}
+              >
+                {value === "qualifs" ? (
+                  <>
+                    <span className="sm:hidden">Qualifs</span>
+                    <span className="hidden sm:inline">{label}</span>
+                  </>
+                ) : (
+                  label
+                )}
+              </button>
+            ))}
+          </div>
+
+          {session === "qualifs" ? (
+            loadingQuali ? (
+              <Loading rows={10} />
+            ) : errorQuali ? (
+              <Notice tone="error" onRetry={retryQuali}>
+                Erreur : {errorQuali}
+              </Notice>
+            ) : (
+              <QualifyingTable rows={qualiResults} />
+            )
+          ) : loadingResults ? (
             <Loading rows={10} />
           ) : errorResults ? (
             <Notice tone="error" onRetry={() => window.location.reload()}>Erreur : {errorResults}</Notice>
-          ) : sessionView === "sprint" && hasSprintWeekend ? (
+          ) : session === "sprint" ? (
             loadingSprint ? (
               <Loading rows={8} />
             ) : errorSprint ? (

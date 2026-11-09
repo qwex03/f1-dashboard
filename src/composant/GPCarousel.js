@@ -10,8 +10,6 @@ export default function GPCarousel({
   rounds,
   selectedRound,
   setSelectedRound,
-  sessionView,
-  setSessionView,
 }) {
   const stripRef = useRef(null);
 
@@ -22,8 +20,7 @@ export default function GPCarousel({
     const past = rounds.filter((r) => raceTime(r) < now);
     const target = past[past.length - 1] ?? rounds[0];
     setSelectedRound(target.round);
-    setSessionView("course");
-  }, [rounds, selectedRound, setSelectedRound, setSessionView]);
+  }, [rounds, selectedRound, setSelectedRound]);
 
   // Keep the selected round in view
   useEffect(() => {
@@ -68,10 +65,7 @@ export default function GPCarousel({
               } ${isFuture && !isSelected ? "opacity-55" : ""}`}
             >
               <button
-                onClick={() => {
-                  setSelectedRound(round.round);
-                  setSessionView("course");
-                }}
+                onClick={() => setSelectedRound(round.round)}
                 className="block w-full text-left"
                 title={round.raceName}
               >
@@ -90,28 +84,13 @@ export default function GPCarousel({
               </button>
 
               {hasSprint && (
-                <div className={`mt-3 grid grid-cols-2 gap-1 rounded-md p-0.5 ${isSelected ? "bg-black/20" : "bg-raised"}`}>
-                  {[
-                    ["course", "Course"],
-                    ["sprint", "Sprint"],
-                  ].map(([value, label]) => {
-                    const active = isSelected && sessionView === value;
-                    return (
-                      <button
-                        key={value}
-                        onClick={() => {
-                          setSelectedRound(round.round);
-                          setSessionView(value);
-                        }}
-                        className={`rounded px-2 py-1 font-display text-xs font-bold uppercase tracking-wide transition-colors ${
-                          active ? "bg-white text-black" : isSelected ? "text-white/80 hover:text-white" : "text-muted hover:text-ink"
-                        }`}
-                      >
-                        {label}
-                      </button>
-                    );
-                  })}
-                </div>
+                <span
+                  className={`mt-2 inline-block rounded px-1.5 py-0.5 font-display text-[0.65rem] font-bold uppercase tracking-wider ${
+                    isSelected ? "bg-black/20 text-white" : "bg-raised text-muted"
+                  }`}
+                >
+                  Sprint
+                </span>
               )}
             </div>
           );
