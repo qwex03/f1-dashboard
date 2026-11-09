@@ -2,6 +2,7 @@ import { useState } from "react";
 import useFetch from "../hooks/useFetch";
 import { useSeason } from "../context/SeasonContext";
 import PageHeader from "../composant/PageHeader";
+import DriversEvolution from "../composant/DriversEvolution";
 import ViewToggle from "../composant/ViewToggle";
 import { DriverName, FlagImg, Loading, Notice, Position, TableCard, TeamName } from "../composant/RaceUI";
 import { constructorColor } from "../utils/teams";
@@ -119,8 +120,13 @@ export default function PilotesPage() {
   const loading = pilotesReq.loading || classementReq.loading;
   const error = pilotesReq.error || classementReq.error;
 
-  const standings =
-    classementReq.data?.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings ?? [];
+  const standingsList = classementReq.data?.MRData?.StandingsTable?.StandingsLists?.[0];
+  const standings = standingsList?.DriverStandings ?? [];
+  const maxRound = Number(standingsList?.round ?? 0);
+  const scheduleReq = useFetch(view === "evolution" ? `https://api.jolpi.ca/ergast/f1/${season}/races/?limit=100` : null);
+  const raceNames = Object.fromEntries(
+    (scheduleReq.data?.MRData?.RaceTable?.Races ?? []).map((r) => [r.round, r.raceName.replace(" Grand Prix", "")])
+  );
   // The API also lists drivers who only drove an FP1 or a qualifying session.
   // Keep the ones with a Grand Prix start, i.e. the ones in the championship standings
   // (before the first race, there are no standings: show the whole entry list).
@@ -168,7 +174,7 @@ export default function PilotesPage() {
           <StandingsTable standings={standings} />
         )
       ) : (
-        <Notice>L'évolution du classement pilotes manche après manche arrive bientôt.</Notice>
+        <DriversEvolution season={season} standings={standings} maxRound={maxRound} raceNames={raceNames} />
       )}
     </div>
   );
